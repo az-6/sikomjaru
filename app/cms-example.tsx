@@ -6,6 +6,7 @@ import TeamSectionComponent from "@/components/sections/TeamSection";
 import StatisticsComponent from "@/components/sections/StatisticsSection";
 import EcommerceSocialSection from "@/components/sections/EcommerceSocialSection";
 import { getPageData } from "@/lib/cms-api";
+import { hasValidCredentials } from "@/lib/supabase";
 import type {
   HeroSection,
   TeamSection,
@@ -31,6 +32,12 @@ export default function CMSPageExample() {
 
   useEffect(() => {
     async function fetchData() {
+      if (!hasValidCredentials) {
+        setError("Supabase configuration not found");
+        setLoading(false);
+        return;
+      }
+
       try {
         const data = await getPageData();
         if (data) {

@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase, hasValidCredentials } from "./supabase";
 import type {
   HeroSection,
   Product,
@@ -14,10 +14,19 @@ import type {
   ContentSection,
 } from "./supabase";
 
+// Helper function to check if we can make API calls
+function canMakeApiCalls(): boolean {
+  return Boolean(hasValidCredentials);
+}
+
 // ===========================
 // HERO SECTION API
 // ===========================
 export async function getHeroSection(): Promise<HeroSection | null> {
+  if (!canMakeApiCalls()) {
+    return null;
+  }
+
   const { data, error } = await supabase
     .from("hero_section")
     .select("*")
@@ -103,6 +112,10 @@ export async function getTeamSection(): Promise<TeamSection | null> {
 }
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
+  if (!canMakeApiCalls()) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("team_members")
     .select("*")
@@ -186,6 +199,10 @@ export async function getResearchItems(): Promise<ResearchItem[]> {
 // STATISTICS API
 // ===========================
 export async function getStatistics(): Promise<Statistic[]> {
+  if (!canMakeApiCalls()) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("statistics")
     .select("*")
@@ -309,6 +326,22 @@ export async function getAllContentSections(): Promise<ContentSection[]> {
 // COMBINED DATA FETCHERS
 // ===========================
 export async function getPageData() {
+  if (!canMakeApiCalls()) {
+    // Return empty/default data when credentials are not available
+    return {
+      heroSection: null,
+      featuredProduct: null,
+      teamSection: null,
+      teamMembers: [],
+      researchSection: null,
+      researchItems: [],
+      statistics: [],
+      ecommercePlatforms: [],
+      socialMedia: [],
+      siteSettings: [],
+    };
+  }
+
   try {
     const [
       heroSection,

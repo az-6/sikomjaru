@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/lib/supabase";
+import { supabase, hasValidCredentials } from "@/lib/supabase";
 import type { HeroSection, TeamMember } from "@/lib/supabase";
 
 export default function AdminPanel() {
@@ -15,8 +15,80 @@ export default function AdminPanel() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    if (hasValidCredentials) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
   }, []);
+
+  // Show setup instructions if credentials are not configured
+  if (!hasValidCredentials) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-2xl w-full">
+          <CardHeader>
+            <CardTitle className="text-center text-red-600">
+              🔧 CMS Setup Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h3 className="font-semibold text-yellow-800 mb-2">
+                Supabase Configuration Missing
+              </h3>
+              <p className="text-yellow-700 text-sm">
+                To use the CMS admin panel, you need to configure your Supabase
+                credentials.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-medium">Setup Steps:</h4>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                <li>
+                  Create a Supabase project at{" "}
+                  <a
+                    href="https://supabase.com"
+                    className="text-blue-600 underline"
+                  >
+                    supabase.com
+                  </a>
+                </li>
+                <li>Copy your project URL and anon key from the dashboard</li>
+                <li>
+                  Add environment variables to your deployment:
+                  <div className="bg-gray-100 p-2 mt-1 rounded text-xs font-mono">
+                    NEXT_PUBLIC_SUPABASE_URL=your_url_here
+                    <br />
+                    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key_here
+                  </div>
+                </li>
+                <li>
+                  Run the database setup from{" "}
+                  <code className="bg-gray-100 px-1 rounded">
+                    database/schema.sql
+                  </code>
+                </li>
+                <li>
+                  Add seed data from{" "}
+                  <code className="bg-gray-100 px-1 rounded">
+                    database/seed.sql
+                  </code>
+                </li>
+              </ol>
+            </div>
+
+            <div className="text-center pt-4">
+              <Button onClick={() => window.location.reload()}>
+                Retry Connection
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   async function fetchData() {
     try {
