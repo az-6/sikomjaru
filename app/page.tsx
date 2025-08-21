@@ -3,6 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
   Heart,
   Users,
   Award,
@@ -565,55 +572,169 @@ export default function LandingPage() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Penelitian & Implementasi
+                Penelitian
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Dokumentasi dari proses perancangan, pengujian, hingga
-                sosialisasi produk kepada masyarakat dan institusi pendidikan.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-              <img
-                src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+SMA"
-                alt="Sosialisasi di SMA Muhammadiyah Tambak"
-                width={400}
-                height={300}
-                className="rounded-lg shadow-md"
-              />
-              <img
-                src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+Desa"
-                alt="Sosialisasi di Desa Kalisaleh"
-                width={400}
-                height={300}
-                className="rounded-lg shadow-md"
-              />
-              <img
-                src="https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Instalasi"
-                alt="Proses Instalasi"
-                width={400}
-                height={300}
-                className="rounded-lg shadow-md"
-              />
-              <img
-                src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+Kader"
-                alt="Sosialisasi ke Kader"
-                width={400}
-                height={300}
-                className="rounded-lg shadow-md"
-              />
-              <img
-                src="https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Perancangan"
-                alt="Proses Perancangan"
-                width={400}
-                height={300}
-                className="rounded-lg shadow-md"
-              />
-              <div className="bg-blue-50 rounded-lg shadow-md flex items-center justify-center p-8">
-                <p className="text-center text-blue-800 font-semibold text-lg">
-                  Dan banyak kegiatan lainnya untuk memastikan kualitas dan
-                  manfaat produk.
-                </p>
+              {/* Text Box untuk deskripsi penelitian */}
+              <div className="max-w-4xl mx-auto mb-16">
+                <div className="bg-gray-50 rounded-lg p-8 border border-gray-200">
+                  <p className="text-lg text-gray-700 leading-relaxed">
+                    Dokumentasi dari proses perancangan, pengujian, hingga
+                    sosialisasi produk kepada masyarakat dan institusi
+                    pendidikan. SIKOMJARU telah melalui serangkaian penelitian
+                    mendalam untuk memastikan efektivitas sebagai alat peraga
+                    RJP. Proses penelitian meliputi analisis kebutuhan,
+                    pengembangan prototype, pengujian fungsionalitas, hingga
+                    evaluasi dampak pembelajaran pada berbagai kelompok target
+                    termasuk siswa SMK, kader kesehatan masyarakat, dan tenaga
+                    medis profesional.
+                  </p>
+                </div>
               </div>
+            </div>
+
+            {/* Implementasi - Horizontal Carousel */}
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+                Implementasi
+              </h3>
+              <Carousel className="w-full max-w-6xl mx-auto">
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="border-0 shadow-lg">
+                      <CardContent className="p-0">
+                        <img
+                          src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+SMA"
+                          alt="Sosialisasi di SMA Muhammadiyah Tambak"
+                          width={400}
+                          height={300}
+                          className="rounded-lg w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">
+                            Sosialisasi di SMA Muhammadiyah Tambak
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            Edukasi RJP untuk siswa SMK kesehatan
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+
+                  <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="border-0 shadow-lg">
+                      <CardContent className="p-0">
+                        <img
+                          src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+Desa"
+                          alt="Sosialisasi di Desa Kalisaleh"
+                          width={400}
+                          height={300}
+                          className="rounded-lg w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">
+                            Sosialisasi di Desa Kalisaleh
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            Pelatihan RJP untuk masyarakat desa
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+
+                  <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="border-0 shadow-lg">
+                      <CardContent className="p-0">
+                        <img
+                          src="https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Instalasi"
+                          alt="Proses Instalasi"
+                          width={400}
+                          height={300}
+                          className="rounded-lg w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">
+                            Proses Instalasi & Setup
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            Pemasangan dan konfigurasi perangkat
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+
+                  <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="border-0 shadow-lg">
+                      <CardContent className="p-0">
+                        <img
+                          src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+Kader"
+                          alt="Sosialisasi ke Kader"
+                          width={400}
+                          height={300}
+                          className="rounded-lg w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">
+                            Pelatihan Kader Kesehatan
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            Edukasi untuk kader posyandu dan puskesmas
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+
+                  <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="border-0 shadow-lg">
+                      <CardContent className="p-0">
+                        <img
+                          src="https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Perancangan"
+                          alt="Proses Perancangan"
+                          width={400}
+                          height={300}
+                          className="rounded-lg w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">
+                            Proses Perancangan
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            Desain dan pengembangan prototype
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+
+                  <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="border-0 shadow-lg">
+                      <CardContent className="p-0">
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg h-48 flex items-center justify-center p-6">
+                          <div className="text-center">
+                            <FlaskConical className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                            <p className="text-blue-800 font-semibold text-lg">
+                              Dan banyak kegiatan penelitian lainnya
+                            </p>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">
+                            Penelitian Berkelanjutan
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            Evaluasi dan pengembangan lebih lanjut
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
             </div>
           </div>
         </section>
