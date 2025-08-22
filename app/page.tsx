@@ -31,7 +31,7 @@ import {
   Lightbulb,
   Monitor,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Komponen untuk ikon media sosial (contoh sederhana)
 const InstagramIcon = () => (
@@ -112,6 +112,29 @@ const ShopeeIcon = () => (
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Track scroll position for header transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Lock body scroll when mobile menu is open (prevents page shifting / overflow)
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      if (isMenuOpen) {
+        document.body.classList.add("overflow-hidden");
+      } else {
+        document.body.classList.remove("overflow-hidden");
+      }
+    }
+  }, [isMenuOpen]);
 
   const menuItems = [
     { href: "#home", label: "Home" },
@@ -122,77 +145,97 @@ export default function LandingPage() {
     { href: "#kontak", label: "Kontak" },
   ];
 
+  const logoPartners = [
+    { src: "/sj.png", alt: "SJ Logo", name: "SIKOMJARU" },
+    {
+      src: "/ump.png",
+      alt: "UMP Logo",
+      name: "Universitas Muhammadiyah Purwokerto",
+    },
+    { src: "/fikes.png", alt: "FIKES Logo", name: "Fakultas Ilmu Kesehatan" },
+    {
+      src: "/p2mw.png",
+      alt: "P2MW Logo",
+      name: "Program Pemberdayaan Masyarakat Wirausaha",
+    },
+    { src: "/logo.png", alt: "Official Logo", name: "Official Logo" },
+  ];
+
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            <a href="#home" className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-2xl">SJ</span>
-              </div>
-              <span className="text-2xl font-bold text-gray-900">
-                SIKOMJARU
-              </span>
-            </a>
-
-            {/* Navigasi Desktop */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {menuItems.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors text-lg"
-                >
-                  {item.label}
-                </a>
+      <header
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/60 backdrop-blur-sm shadow-sm border-b border-gray-200/40"
+            : "bg-white/90 backdrop-blur-md shadow-md border-b border-gray-200/60"
+        }`}
+      >
+        <div className="w-full px-4">
+          <div className="flex items-center justify-between h-20 sm:h-24 min-h-0 w-full overflow-visible">
+            {/* Logo Partners - Desktop & Mobile */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 flex-1 justify-center mx-2 sm:mx-4 max-w-full">
+              {logoPartners.map((logo, index) => (
+                <div key={index} className="relative group flex-shrink-0">
+                  <img
+                    src={logo.src}
+                    alt={logo.alt}
+                    className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto object-contain hover:opacity-80 transition-opacity duration-300 max-w-[120px]"
+                    onError={(e) => {
+                      // Fallback jika gambar tidak ditemukan
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                  {/* Tooltip - Hide on small screens */}
+                  <div className="hidden sm:block absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50">
+                    {logo.name}
+                  </div>
+                </div>
               ))}
-            </nav>
-
-            <div className="hidden md:flex items-center">
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 text-base">
-                <a href="#belanja">Beli Sekarang</a>
-              </Button>
             </div>
 
-            {/* Tombol Menu Mobile */}
+            {/* Burger Menu Button - Always visible */}
             <button
-              className="md:hidden"
+              className="relative z-10 flex-shrink-0 p-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? (
-                <X className="w-8 h-8" />
+                <X className="w-6 h-6 sm:w-8 sm:h-8 text-gray-700" />
               ) : (
-                <Menu className="w-8 h-8" />
+                <Menu className="w-6 h-6 sm:w-8 sm:h-8 text-gray-700" />
               )}
             </button>
           </div>
 
-          {/* Navigasi Mobile */}
+          {/* Burger Menu Dropdown */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-100">
-              <nav className="flex flex-col space-y-4">
-                {menuItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-gray-700 hover:text-blue-600 font-medium text-lg"
-                  >
-                    {item.label}
-                  </a>
-                ))}
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white w-fit mt-4">
-                  <a href="#belanja">Beli Sekarang</a>
-                </Button>
-              </nav>
+            <div className="absolute top-full left-0 w-full bg-white shadow-xl border-b border-gray-200 max-h-[calc(100vh-5rem)] sm:max-h-[calc(100vh-6rem)] overflow-y-auto z-40 overscroll-contain">
+              <div className="px-4 py-6">
+                <nav className="flex flex-col space-y-4">
+                  {menuItems.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 px-4 rounded-lg hover:bg-blue-50 transition-all duration-300 break-words"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                  <div className="pt-4 border-t border-gray-200">
+                    <Button className="bg-orange-500 hover:bg-orange-600 text-white w-full py-3 text-lg">
+                      <a href="#belanja">Beli Sekarang</a>
+                    </Button>
+                  </div>
+                </nav>
+              </div>
             </div>
           )}
         </div>
       </header>
 
-      <main>
+      <main className="pt-20 sm:pt-24">
         {/* Bagian Home */}
         <section
           id="home"
@@ -434,7 +477,7 @@ export default function LandingPage() {
 
             <div className="text-center mb-12">
               <h3 className="text-3xl font-bold text-gray-900">
-                Tim Inovator Kami
+                Sikomjaru Team
               </h3>
             </div>
 
@@ -468,101 +511,249 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            {/* Foto Kelompok Mahasiswa */}
+            {/* Tim Mahasiswa P2MW */}
             <div className="text-center mb-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">
                 Tim Mahasiswa P2MW
               </h3>
-              <div className="max-w-3xl mx-auto mb-8">
-                <img
-                  src="https://placehold.co/600x400/e0f2fe/0ea5e9?text=Foto+Kelompok+Tim+Mahasiswa+P2MW"
-                  alt="Foto Kelompok Tim Mahasiswa P2MW"
-                  width={600}
-                  height={400}
-                  className="rounded-xl shadow-lg mx-auto"
-                />
-                <p className="text-gray-600 mt-4 text-sm">
-                  Tim mahasiswa P2MW SIKOMJARU: 4 inovator muda yang berdedikasi
-                  untuk mengembangkan teknologi pelatihan RJP
-                </p>
+
+              {/* Carousel untuk Foto Kelompok */}
+              <div className="max-w-2xl mx-auto mb-8">
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    <CarouselItem>
+                      <img
+                        src="https://placehold.co/500x300/e0f2fe/0ea5e9?text=Foto+Kelompok+Tim+1"
+                        alt="Foto Kelompok Tim Mahasiswa P2MW - 1"
+                        width={500}
+                        height={300}
+                        className="rounded-xl shadow-lg mx-auto w-full h-64 object-cover"
+                      />
+                    </CarouselItem>
+                    <CarouselItem>
+                      <img
+                        src="https://placehold.co/500x300/fef3c7/d97706?text=Foto+Kelompok+Tim+2"
+                        alt="Foto Kelompok Tim Mahasiswa P2MW - 2"
+                        width={500}
+                        height={300}
+                        className="rounded-xl shadow-lg mx-auto w-full h-64 object-cover"
+                      />
+                    </CarouselItem>
+                    <CarouselItem>
+                      <img
+                        src="https://placehold.co/500x300/ecfdf5/10b981?text=Foto+Kelompok+Tim+3"
+                        alt="Foto Kelompok Tim Mahasiswa P2MW - 3"
+                        width={500}
+                        height={300}
+                        className="rounded-xl shadow-lg mx-auto w-full h-64 object-cover"
+                      />
+                    </CarouselItem>
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <Card className="border-0 shadow-lg text-center">
-                <CardContent className="p-6">
-                  <img
-                    src="https://placehold.co/80x80/bfdbfe/1e40af?text=VD"
-                    alt="Vieki Diva Ksatria"
-                    width={80}
-                    height={80}
-                    className="rounded-full mx-auto mb-4"
-                  />
-                  <h4 className="font-bold text-lg text-gray-900">
-                    Vieki Diva Ksatria
-                  </h4>
-                  <p className="text-blue-600 font-semibold">CEO</p>
-                  <p className="text-gray-600 mt-2 text-sm">
-                    Memimpin tim, merancang perencanaan, dan mengawasi
-                    pengembangan produk.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-lg text-center">
-                <CardContent className="p-6">
-                  <img
-                    src="https://placehold.co/80x80/fecaca/991b1b?text=R"
-                    alt="Ruliyanti"
-                    width={80}
-                    height={80}
-                    className="rounded-full mx-auto mb-4"
-                  />
-                  <h4 className="font-bold text-lg text-gray-900">Ruliyanti</h4>
-                  <p className="text-blue-600 font-semibold">Finance</p>
-                  <p className="text-gray-600 mt-2 text-sm">
-                    Mengelola administrasi dan keuangan proyek secara efisien
-                    dan akurat.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-lg text-center">
-                <CardContent className="p-6">
-                  <img
-                    src="https://placehold.co/80x80/fed7aa/9a3412?text=ISY"
-                    alt="Ilham Saifullah Yusup"
-                    width={80}
-                    height={80}
-                    className="rounded-full mx-auto mb-4"
-                  />
-                  <h4 className="font-bold text-lg text-gray-900">
-                    Ilham Saifullah Yusup
-                  </h4>
-                  <p className="text-blue-600 font-semibold">Procurement</p>
-                  <p className="text-gray-600 mt-2 text-sm">
-                    Bertugas membeli dan menyiapkan semua bahan serta alat untuk
-                    proses produksi.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-lg text-center">
-                <CardContent className="p-6">
-                  <img
-                    src="https://placehold.co/80x80/d8b4fe/581c87?text=DBK"
-                    alt="Diva Bagus Kurniawan"
-                    width={80}
-                    height={80}
-                    className="rounded-full mx-auto mb-4"
-                  />
-                  <h4 className="font-bold text-lg text-gray-900">
-                    Diva Bagus Kurniawan
-                  </h4>
-                  <p className="text-blue-600 font-semibold">Publication</p>
-                  <p className="text-gray-600 mt-2 text-sm">
-                    Bertanggung jawab atas publikasi, promosi, dan citra merek
-                    SIKOMJARU.
-                  </p>
-                </CardContent>
-              </Card>
+            {/* Profil Mahasiswa - Format Card seperti Dosen */}
+            <div className="space-y-8">
+              {/* Vieki Diva Ksatria */}
+              <div className="max-w-4xl mx-auto">
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
+                      <img
+                        src="https://placehold.co/120x120/bfdbfe/1e40af?text=VD"
+                        alt="Vieki Diva Ksatria"
+                        width={120}
+                        height={120}
+                        className="rounded-lg shadow-md flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">
+                              Vieki Diva Ksatria
+                            </h4>
+                            <p className="text-blue-600 font-semibold">CEO</p>
+                            <p className="text-gray-600 mt-2">
+                              Memimpin tim, merancang perencanaan, dan mengawasi
+                              pengembangan produk dengan fokus pada inovasi dan
+                              kualitas.
+                            </p>
+                          </div>
+                          <div className="mt-4 md:mt-0">
+                            <Button
+                              size="sm"
+                              className="bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              <a
+                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <InstagramIcon />
+                                <span className="ml-2">Instagram</span>
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Ruliyanti */}
+              <div className="max-w-4xl mx-auto">
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
+                      <img
+                        src="https://placehold.co/120x120/fecaca/991b1b?text=R"
+                        alt="Ruliyanti"
+                        width={120}
+                        height={120}
+                        className="rounded-lg shadow-md flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">
+                              Ruliyanti
+                            </h4>
+                            <p className="text-blue-600 font-semibold">
+                              Finance
+                            </p>
+                            <p className="text-gray-600 mt-2">
+                              Mengelola administrasi dan keuangan proyek secara
+                              efisien dan akurat, memastikan transparansi
+                              finansial tim.
+                            </p>
+                          </div>
+                          <div className="mt-4 md:mt-0">
+                            <Button
+                              size="sm"
+                              className="bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              <a
+                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <InstagramIcon />
+                                <span className="ml-2">Instagram</span>
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Ilham Saifullah Yusup */}
+              <div className="max-w-4xl mx-auto">
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
+                      <img
+                        src="https://placehold.co/120x120/fed7aa/9a3412?text=ISY"
+                        alt="Ilham Saifullah Yusup"
+                        width={120}
+                        height={120}
+                        className="rounded-lg shadow-md flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">
+                              Ilham Saifullah Yusup
+                            </h4>
+                            <p className="text-blue-600 font-semibold">
+                              Procurement
+                            </p>
+                            <p className="text-gray-600 mt-2">
+                              Bertugas membeli dan menyiapkan semua bahan serta
+                              alat untuk proses produksi dengan kualitas
+                              terbaik.
+                            </p>
+                          </div>
+                          <div className="mt-4 md:mt-0">
+                            <Button
+                              size="sm"
+                              className="bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              <a
+                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <InstagramIcon />
+                                <span className="ml-2">Instagram</span>
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Diva Bagus Kurniawan */}
+              <div className="max-w-4xl mx-auto">
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
+                      <img
+                        src="https://placehold.co/120x120/d8b4fe/581c87?text=DBK"
+                        alt="Diva Bagus Kurniawan"
+                        width={120}
+                        height={120}
+                        className="rounded-lg shadow-md flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">
+                              Diva Bagus Kurniawan
+                            </h4>
+                            <p className="text-blue-600 font-semibold">
+                              Publication
+                            </p>
+                            <p className="text-gray-600 mt-2">
+                              Bertanggung jawab atas publikasi, promosi, dan
+                              citra merek SIKOMJARU di berbagai platform
+                              digital.
+                            </p>
+                          </div>
+                          <div className="mt-4 md:mt-0">
+                            <Button
+                              size="sm"
+                              className="bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              <a
+                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <InstagramIcon />
+                                <span className="ml-2">Instagram</span>
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
@@ -818,234 +1009,35 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Bagian E-Commerce & Media Sosial */}
-        <section
-          id="kontak"
-          className="py-20 bg-gradient-to-br from-blue-50 to-teal-50"
-        >
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Temukan SIKOMJARU di Platform Favorit Anda
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Dapatkan produk SIKOMJARU melalui e-commerce terpercaya dan
-                ikuti perkembangan terbaru di media sosial kami
-              </p>
-            </div>
-
-            <div className="max-w-6xl mx-auto">
-              {/* E-Commerce Section */}
-              <div className="mb-16">
-                <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-                  🛒 Belanja di E-Commerce
-                </h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {/* Shopee */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-8 text-center">
-                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ShoppingBag className="w-8 h-8 text-orange-600" />
-                      </div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-2">
-                        Shopee
-                      </h4>
-                      <p className="text-gray-600 mb-4 text-sm">
-                        Gratis ongkir & cashback menarik
-                      </p>
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Beli di Shopee
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Tokopedia */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-8 text-center">
-                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ShoppingBag className="w-8 h-8 text-green-600" />
-                      </div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-2">
-                        Tokopedia
-                      </h4>
-                      <p className="text-gray-600 mb-4 text-sm">
-                        Mulai dari produk terbaik
-                      </p>
-                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Beli di Tokopedia
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Lazada */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-8 text-center">
-                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ShoppingBag className="w-8 h-8 text-blue-600" />
-                      </div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-2">
-                        Lazada
-                      </h4>
-                      <p className="text-gray-600 mb-4 text-sm">
-                        Pengiriman cepat se-Indonesia
-                      </p>
-                      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Beli di Lazada
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {/* Media Sosial Section */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-                  📱 Ikuti Kami di Media Sosial
-                </h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-                  {/* WhatsApp */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Phone className="w-6 h-6 text-green-600" />
-                      </div>
-                      <h5 className="font-bold text-gray-900 mb-2">WhatsApp</h5>
-                      <Button
-                        size="sm"
-                        className="w-full bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        <a
-                          href="https://wa.me/6281234567890"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Chat
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Instagram */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <InstagramIcon />
-                      </div>
-                      <h5 className="font-bold text-gray-900 mb-2">
-                        Instagram
-                      </h5>
-                      <Button
-                        size="sm"
-                        className="w-full bg-pink-500 hover:bg-pink-600 text-white"
-                      >
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Follow
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* TikTok */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <TiktokIcon />
-                      </div>
-                      <h5 className="font-bold text-gray-900 mb-2">TikTok</h5>
-                      <Button
-                        size="sm"
-                        className="w-full bg-gray-800 hover:bg-gray-900 text-white"
-                      >
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Follow
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Facebook */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <FacebookIcon />
-                      </div>
-                      <h5 className="font-bold text-gray-900 mb-2">Facebook</h5>
-                      <Button
-                        size="sm"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Like
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* YouTube */}
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <YoutubeIcon />
-                      </div>
-                      <h5 className="font-bold text-gray-900 mb-2">YouTube</h5>
-                      <Button
-                        size="sm"
-                        className="w-full bg-red-600 hover:bg-red-700 text-white"
-                      >
-                        <a href="#" target="_blank" rel="noopener noreferrer">
-                          Subscribe
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {/* CTA Section */}
-              <div className="mt-16 text-center">
-                <Card className="border-0 shadow-lg bg-gradient-to-r from-teal-500 to-blue-600">
-                  <CardContent className="p-8">
-                    <h3 className="text-2xl font-bold text-white mb-4">
-                      Siap Bergabung dengan Komunitas SIKOMJARU?
-                    </h3>
-                    <p className="text-teal-100 mb-6">
-                      Dapatkan update terbaru, promo eksklusif, dan konten
-                      edukatif seputar pelatihan RJP
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button
-                        size="lg"
-                        className="bg-white text-teal-600 hover:bg-gray-100"
-                      >
-                        <ShoppingBag className="w-5 h-5 mr-2" />
-                        Belanja Sekarang
-                      </Button>
-                      <Button
-                        size="lg"
-                        className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-teal-600 transition-all duration-300"
-                      >
-                        <Phone className="w-5 h-5 mr-2" />
-                        Hubungi Kami
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Section kontak dipindah ke footer */}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white">
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/6281234567890"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat via WhatsApp"
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[60] transition-transform hover:scale-105"
+      >
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300">
+          {/* WhatsApp Icon - Clean and recognizable */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-7 h-7 sm:w-8 sm:h-8"
+          >
+            <path d="M20.5 3.5C18.25 1.25 15.2 0 12 0S5.75 1.25 3.5 3.5 0 8.8 0 12c0 2.1.55 4.15 1.6 5.95L.05 24l6.25-1.6c1.75.95 3.7 1.45 5.7 1.45 3.2 0 6.25-1.25 8.5-3.5s3.5-5.3 3.5-8.5-1.25-6.25-3.5-8.5zM12 21.85c-1.8 0-3.55-.45-5.1-1.35l-.35-.2-3.7.95 1-3.6-.25-.4c-.95-1.5-1.45-3.25-1.45-5.05 0-2.65 1.05-5.15 2.95-7.05S9.35 2.15 12 2.15s5.15 1.05 7.05 2.95 2.95 4.4 2.95 7.05-1.05 5.15-2.95 7.05S14.65 21.85 12 21.85z" />
+            <path d="M18.75 15.3c-.15-.25-.55-.4-.9-.55l-1.75-.85c-.35-.15-.6-.25-.85.25-.25.5-.85 1.1-1.05 1.3-.2.25-.4.25-.75.1-.35-.15-1.5-.55-2.85-1.75-1.05-.95-1.75-2.1-1.95-2.45-.2-.35 0-.55.15-.7.15-.15.35-.4.5-.6.15-.2.2-.35.35-.55.15-.25.05-.45-.05-.6-.1-.15-.85-2.05-1.15-2.8-.3-.7-.6-.6-.85-.6h-.7c-.25 0-.65.1-.95.45-.35.35-1.25 1.2-1.25 3 0 1.8 1.3 3.55 1.5 3.8.2.25 2.8 4.3 6.75 6.05.95.4 1.65.65 2.25.8.95.3 1.8.25 2.5.15.75-.1 2.35-.95 2.7-1.9.35-.95.35-1.75.25-1.9z" />
+          </svg>
+        </div>
+      </a>
+
+      {/* Footer (mengandung kontak & platform) */}
+      <footer id="kontak" className="bg-gray-900 text-white">
         <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -1073,12 +1065,68 @@ export default function LandingPage() {
               </nav>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Akun Official</h3>
-              <div className="text-gray-400 space-y-2">
-                <p>Instagram: sikomjaru.official</p>
-                <p>TikTok: sikomjaru.official</p>
-                <p>Shopee: sikomjaru.official.store</p>
-                <p>Tokopedia: sikomjaru.official.store</p>
+              <h3 className="text-lg font-semibold mb-4">Platform & Sosial</h3>
+              <div className="grid grid-cols-4 gap-3">
+                {/* WhatsApp */}
+                <a
+                  href="https://wa.me/6281234567890"
+                  className="group"
+                  aria-label="WhatsApp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                </a>
+                {/* Instagram */}
+                <a
+                  href="#"
+                  className="group"
+                  aria-label="Instagram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition">
+                    <InstagramIcon />
+                  </div>
+                </a>
+                {/* TikTok */}
+                <a
+                  href="#"
+                  className="group"
+                  aria-label="TikTok"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-gray-700/40 border border-gray-500/30 flex items-center justify-center text-gray-200 group-hover:bg-gray-900 group-hover:text-white transition">
+                    <TiktokIcon />
+                  </div>
+                </a>
+                {/* Facebook */}
+                <a
+                  href="#"
+                  className="group"
+                  aria-label="Facebook"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
+                    <FacebookIcon />
+                  </div>
+                </a>
+                {/* YouTube */}
+                <a
+                  href="#"
+                  className="group"
+                  aria-label="YouTube"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition">
+                    <YoutubeIcon />
+                  </div>
+                </a>
               </div>
             </div>
             <div>
