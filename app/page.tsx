@@ -493,18 +493,38 @@ export default function LandingPage() {
                       height={150}
                       className="rounded-lg shadow-md flex-shrink-0"
                     />
-                    <div>
-                      <h4 className="text-xl font-bold text-gray-900">
-                        Ns. M. Hanif Prasetya Adhi, S.Kep., M. kep
-                      </h4>
-                      <p className="text-blue-600 font-semibold">
-                        Dosen Pembimbing
-                      </p>
-                      <p className="text-gray-600 mt-2">
-                        Memberikan arahan teknis, validasi akademik, dan
-                        penguatan struktur bisnis untuk memastikan SIKOMJARU
-                        berkembang secara profesional dan berkelanjutan.
-                      </p>
+                    <div className="flex-1">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <h4 className="text-xl font-bold text-gray-900">
+                            Ns. M. Hanif Prasetya Adhi, S.Kep., M. kep
+                          </h4>
+                          <p className="text-blue-600 font-semibold">
+                            Dosen Pembimbing
+                          </p>
+                          <p className="text-gray-600 mt-2">
+                            Memberikan arahan teknis, validasi akademik, dan
+                            penguatan struktur bisnis untuk memastikan SIKOMJARU
+                            berkembang secara profesional dan berkelanjutan.
+                          </p>
+                        </div>
+                        <div className="mt-4 md:mt-0">
+                          <Button
+                            size="sm"
+                            className="bg-pink-500 hover:bg-pink-600 text-white"
+                          >
+                            <a
+                              href="https://www.instagram.com/hanif_prasetyaadhi?igsh=MTBhdjhtM2J0dmZiNA=="
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center"
+                            >
+                              <InstagramIcon />
+                              <span className="ml-2">Instagram</span>
+                            </a>
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -555,205 +575,164 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Profil Mahasiswa - Format Card seperti Dosen */}
-            <div className="space-y-8">
+            {/* Profil Mahasiswa - Grid 2 baris */}
+            <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {/* Vieki Diva Ksatria */}
-              <div className="max-w-4xl mx-auto">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
-                      <img
-                        src="https://placehold.co/120x120/bfdbfe/1e40af?text=VD"
-                        alt="Vieki Diva Ksatria"
-                        width={120}
-                        height={120}
-                        className="rounded-lg shadow-md flex-shrink-0"
-                      />
-                      <div className="flex-1">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <h4 className="text-xl font-bold text-gray-900">
-                              Vieki Diva Ksatria
-                            </h4>
-                            <p className="text-blue-600 font-semibold">CEO</p>
-                            <p className="text-gray-600 mt-2">
-                              Memimpin tim, merancang perencanaan, dan mengawasi
-                              pengembangan produk dengan fokus pada inovasi dan
-                              kualitas.
-                            </p>
-                          </div>
-                          <div className="mt-4 md:mt-0">
-                            <Button
-                              size="sm"
-                              className="bg-pink-500 hover:bg-pink-600 text-white"
-                            >
-                              <a
-                                href="#"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                              >
-                                <InstagramIcon />
-                                <span className="ml-2">Instagram</span>
-                              </a>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <img
+                      src="https://placehold.co/120x120/bfdbfe/1e40af?text=VD"
+                      alt="Vieki Diva Ksatria"
+                      width={120}
+                      height={120}
+                      className="rounded-lg shadow-md mx-auto mb-4"
+                    />
+                    <h4 className="text-xl font-bold text-gray-900">
+                      Vieki Diva Ksatria
+                    </h4>
+                    <p className="text-blue-600 font-semibold">CEO</p>
+                    <p className="text-gray-600 mt-2 text-sm">
+                      Memimpin tim, merancang perencanaan, dan mengawasi
+                      pengembangan produk dengan fokus pada inovasi dan
+                      kualitas.
+                    </p>
+                    <div className="mt-4">
+                      <Button
+                        size="sm"
+                        className="bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        <a
+                          href="https://www.instagram.com/vieki.divaks_?igsh=cHd4d2ZrZGp2MmFu"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center"
+                        >
+                          <InstagramIcon />
+                          <span className="ml-2">Instagram</span>
+                        </a>
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Ruliyanti */}
-              <div className="max-w-4xl mx-auto">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
-                      <img
-                        src="https://placehold.co/120x120/fecaca/991b1b?text=R"
-                        alt="Ruliyanti"
-                        width={120}
-                        height={120}
-                        className="rounded-lg shadow-md flex-shrink-0"
-                      />
-                      <div className="flex-1">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <h4 className="text-xl font-bold text-gray-900">
-                              Ruliyanti
-                            </h4>
-                            <p className="text-blue-600 font-semibold">
-                              Finance
-                            </p>
-                            <p className="text-gray-600 mt-2">
-                              Mengelola administrasi dan keuangan proyek secara
-                              efisien dan akurat, memastikan transparansi
-                              finansial tim.
-                            </p>
-                          </div>
-                          <div className="mt-4 md:mt-0">
-                            <Button
-                              size="sm"
-                              className="bg-pink-500 hover:bg-pink-600 text-white"
-                            >
-                              <a
-                                href="#"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                              >
-                                <InstagramIcon />
-                                <span className="ml-2">Instagram</span>
-                              </a>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <img
+                      src="https://placehold.co/120x120/fecaca/991b1b?text=R"
+                      alt="Ruliyanti"
+                      width={120}
+                      height={120}
+                      className="rounded-lg shadow-md mx-auto mb-4"
+                    />
+                    <h4 className="text-xl font-bold text-gray-900">
+                      Ruliyanti
+                    </h4>
+                    <p className="text-blue-600 font-semibold">Finance</p>
+                    <p className="text-gray-600 mt-2 text-sm">
+                      Mengelola administrasi dan keuangan proyek secara efisien
+                      dan akurat, memastikan transparansi finansial tim.
+                    </p>
+                    <div className="mt-4">
+                      <Button
+                        size="sm"
+                        className="bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        <a
+                          href="https://www.instagram.com/rulliyyn?igsh=OWplazBmdG80eXo1"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center"
+                        >
+                          <InstagramIcon />
+                          <span className="ml-2">Instagram</span>
+                        </a>
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Ilham Saifullah Yusup */}
-              <div className="max-w-4xl mx-auto">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
-                      <img
-                        src="https://placehold.co/120x120/fed7aa/9a3412?text=ISY"
-                        alt="Ilham Saifullah Yusup"
-                        width={120}
-                        height={120}
-                        className="rounded-lg shadow-md flex-shrink-0"
-                      />
-                      <div className="flex-1">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <h4 className="text-xl font-bold text-gray-900">
-                              Ilham Saifullah Yusup
-                            </h4>
-                            <p className="text-blue-600 font-semibold">
-                              Procurement
-                            </p>
-                            <p className="text-gray-600 mt-2">
-                              Bertugas membeli dan menyiapkan semua bahan serta
-                              alat untuk proses produksi dengan kualitas
-                              terbaik.
-                            </p>
-                          </div>
-                          <div className="mt-4 md:mt-0">
-                            <Button
-                              size="sm"
-                              className="bg-pink-500 hover:bg-pink-600 text-white"
-                            >
-                              <a
-                                href="#"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                              >
-                                <InstagramIcon />
-                                <span className="ml-2">Instagram</span>
-                              </a>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <img
+                      src="https://placehold.co/120x120/fed7aa/9a3412?text=ISY"
+                      alt="Ilham Saifullah Yusup"
+                      width={120}
+                      height={120}
+                      className="rounded-lg shadow-md mx-auto mb-4"
+                    />
+                    <h4 className="text-xl font-bold text-gray-900">
+                      Ilham Saifullah Yusup
+                    </h4>
+                    <p className="text-blue-600 font-semibold">Procurement</p>
+                    <p className="text-gray-600 mt-2 text-sm">
+                      Bertugas membeli dan menyiapkan semua bahan serta alat
+                      untuk proses produksi dengan kualitas terbaik.
+                    </p>
+                    <div className="mt-4">
+                      <Button
+                        size="sm"
+                        className="bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        <a
+                          href="https://www.instagram.com/hmsy14_?igsh=MTdlMDh3bjlkZWl4Zw=="
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center"
+                        >
+                          <InstagramIcon />
+                          <span className="ml-2">Instagram</span>
+                        </a>
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Diva Bagus Kurniawan */}
-              <div className="max-w-4xl mx-auto">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 text-center md:text-left">
-                      <img
-                        src="https://placehold.co/120x120/d8b4fe/581c87?text=DBK"
-                        alt="Diva Bagus Kurniawan"
-                        width={120}
-                        height={120}
-                        className="rounded-lg shadow-md flex-shrink-0"
-                      />
-                      <div className="flex-1">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <h4 className="text-xl font-bold text-gray-900">
-                              Diva Bagus Kurniawan
-                            </h4>
-                            <p className="text-blue-600 font-semibold">
-                              Publication
-                            </p>
-                            <p className="text-gray-600 mt-2">
-                              Bertanggung jawab atas publikasi, promosi, dan
-                              citra merek SIKOMJARU di berbagai platform
-                              digital.
-                            </p>
-                          </div>
-                          <div className="mt-4 md:mt-0">
-                            <Button
-                              size="sm"
-                              className="bg-pink-500 hover:bg-pink-600 text-white"
-                            >
-                              <a
-                                href="#"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                              >
-                                <InstagramIcon />
-                                <span className="ml-2">Instagram</span>
-                              </a>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <img
+                      src="https://placehold.co/120x120/d8b4fe/581c87?text=DBK"
+                      alt="Diva Bagus Kurniawan"
+                      width={120}
+                      height={120}
+                      className="rounded-lg shadow-md mx-auto mb-4"
+                    />
+                    <h4 className="text-xl font-bold text-gray-900">
+                      Diva Bagus Kurniawan
+                    </h4>
+                    <p className="text-blue-600 font-semibold">Publication</p>
+                    <p className="text-gray-600 mt-2 text-sm">
+                      Bertanggung jawab atas publikasi, promosi, dan citra merek
+                      SIKOMJARU di berbagai platform digital.
+                    </p>
+                    <div className="mt-4">
+                      <Button
+                        size="sm"
+                        className="bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        <a
+                          href="https://www.instagram.com/divabagus74?igsh=ZGt0bTVrMmV3YnAx"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center"
+                        >
+                          <InstagramIcon />
+                          <span className="ml-2">Instagram</span>
+                        </a>
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
@@ -1014,7 +993,7 @@ export default function LandingPage() {
 
       {/* Floating WhatsApp Button */}
       <a
-        href="https://wa.me/6281234567890"
+        href="https://wa.me/6282234845084"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat via WhatsApp"
@@ -1051,17 +1030,32 @@ export default function LandingPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Tautan Cepat</h3>
+              <h3 className="text-lg font-semibold mb-4">Supported By</h3>
               <nav className="flex flex-col space-y-2">
-                {menuItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                ))}
+                <a
+                  href="https://www.instagram.com/ump.ac.id?igsh=dXRvazl2NGpsM3dn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  UMP
+                </a>
+                <a
+                  href="https://www.instagram.com/kemahasiswaan.dikti?igsh=MWJhdmpuY3E5NXRvaw=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Kemahasiswaan Dikti
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Belmawa Dikti
+                </a>
               </nav>
             </div>
             <div>
@@ -1069,7 +1063,7 @@ export default function LandingPage() {
               <div className="grid grid-cols-4 gap-3">
                 {/* WhatsApp */}
                 <a
-                  href="https://wa.me/6281234567890"
+                  href="https://wa.me/6282234845084"
                   className="group"
                   aria-label="WhatsApp"
                   target="_blank"
@@ -1081,7 +1075,7 @@ export default function LandingPage() {
                 </a>
                 {/* Instagram */}
                 <a
-                  href="#"
+                  href="https://www.instagram.com/sikomjaru.official?igsh=MWZ5c3lvdjd1M252bA=="
                   className="group"
                   aria-label="Instagram"
                   target="_blank"
@@ -1093,7 +1087,7 @@ export default function LandingPage() {
                 </a>
                 {/* TikTok */}
                 <a
-                  href="#"
+                  href="https://www.tiktok.com/@sikomjaru?_t=ZS-8z4z1yF59rF&_r=1"
                   className="group"
                   aria-label="TikTok"
                   target="_blank"
@@ -1105,7 +1099,7 @@ export default function LandingPage() {
                 </a>
                 {/* Facebook */}
                 <a
-                  href="#"
+                  href="https://www.facebook.com/profile.php?id=61576916254865"
                   className="group"
                   aria-label="Facebook"
                   target="_blank"
@@ -1117,7 +1111,7 @@ export default function LandingPage() {
                 </a>
                 {/* YouTube */}
                 <a
-                  href="#"
+                  href="https://www.youtube.com/@SIKOMJARU_Phantom_Edukasi_RJP"
                   className="group"
                   aria-label="YouTube"
                   target="_blank"
@@ -1127,6 +1121,27 @@ export default function LandingPage() {
                     <YoutubeIcon />
                   </div>
                 </a>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Logo Partners</h3>
+              <div className="flex flex-wrap items-center gap-2 justify-center">
+                {logoPartners.map((logo, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      className="h-8 sm:h-10 w-auto object-contain hover:opacity-80 transition-opacity duration-300"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                    {/* Tooltip */}
+                    <div className="hidden sm:block absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50">
+                      {logo.name}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             <div>
