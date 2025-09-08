@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Heart,
   Users,
@@ -105,6 +107,8 @@ const ShopeeIcon = () => (
 );
 
 export default function LandingPage() {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const logoPartners = [
     { src: "/sj.png", alt: "Sikomjaru Logo", name: "SIKOMJARU" },
     {
@@ -125,6 +129,29 @@ export default function LandingPage() {
       name: "Islamic Student Business Incubator",
     },
   ];
+
+  // Komponen untuk gambar yang bisa diklik untuk dibuka modal
+  const ClickableImage = ({
+    src,
+    alt,
+    className,
+    onError,
+  }: {
+    src: string;
+    alt: string;
+    className?: string;
+    onError?: (e: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+  }) => (
+    <img
+      src={src}
+      alt={alt}
+      className={`cursor-pointer hover:opacity-90 transition-opacity ${
+        className || ""
+      }`}
+      onClick={() => setSelectedImage(src)}
+      onError={onError}
+    />
+  );
 
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
@@ -160,7 +187,7 @@ export default function LandingPage() {
                           key={index}
                           className="relative group flex-shrink-0"
                         >
-                          <img
+                          <ClickableImage
                             src={logo.src}
                             alt={logo.alt}
                             className="h-6 sm:h-8 md:h-10 lg:h-12 w-auto object-contain hover:opacity-80 transition-opacity duration-300 max-w-[60px] sm:max-w-[80px]"
@@ -214,7 +241,7 @@ export default function LandingPage() {
 
                         {/* Slide 2 - Foto Produk */}
                         <CarouselItem>
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/600x450/e0f2fe/0ea5e9?text=Produk+SIKOMJARU+Tampak+Depan"
                             alt="Produk SIKOMJARU Tampak Depan"
                             className="w-full h-full object-cover aspect-[4/3]"
@@ -223,7 +250,7 @@ export default function LandingPage() {
 
                         {/* Slide 3 - Foto Fitur */}
                         <CarouselItem>
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/600x450/d1fae5/34d399?text=Fitur+LCD+dan+Speaker"
                             alt="Fitur LCD dan Speaker SIKOMJARU"
                             className="w-full h-full object-cover aspect-[4/3]"
@@ -232,7 +259,7 @@ export default function LandingPage() {
 
                         {/* Slide 4 - Foto dalam Penggunaan */}
                         <CarouselItem>
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/600x450/fef3c7/d97706?text=SIKOMJARU+dalam+Pelatihan"
                             alt="SIKOMJARU dalam Pelatihan RJP"
                             className="w-full h-full object-cover aspect-[4/3]"
@@ -241,7 +268,7 @@ export default function LandingPage() {
 
                         {/* Slide 5 - Foto Detail Komponen */}
                         <CarouselItem>
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/600x450/ecfdf5/10b981?text=Detail+Komponen+SIKOMJARU"
                             alt="Detail Komponen SIKOMJARU"
                             className="w-full h-full object-cover aspect-[4/3]"
@@ -290,7 +317,7 @@ export default function LandingPage() {
                     <CarouselContent>
                       {/* Slide 1 - Tampak Produk Utama */}
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/e0f2fe/0ea5e9?text=Tampak+Produk+SIKOMJARU"
                           alt="Tampak Produk SIKOMJARU"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -299,7 +326,7 @@ export default function LandingPage() {
 
                       {/* Slide 2 - Fitur LCD Display */}
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/d1fae5/34d399?text=Layar+LCD+Digital"
                           alt="Layar LCD Digital SIKOMJARU"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -308,7 +335,7 @@ export default function LandingPage() {
 
                       {/* Slide 3 - Speaker dan Audio */}
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/fef3c7/d97706?text=Panduan+Suara+Speaker"
                           alt="Panduan Suara Speaker"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -317,7 +344,7 @@ export default function LandingPage() {
 
                       {/* Slide 4 - Indikator Lampu */}
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/ecfdf5/10b981?text=Indikator+Lampu+LED"
                           alt="Indikator Lampu LED"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -326,7 +353,7 @@ export default function LandingPage() {
 
                       {/* Slide 5 - Material dan Build Quality */}
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/fecaca/991b1b?text=Material+Fiber+Berkualitas"
                           alt="Material Fiber Berkualitas"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -335,7 +362,7 @@ export default function LandingPage() {
 
                       {/* Slide 6 - Batik Design */}
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/dbeafe/1e3a8a?text=Motif+Batik+Banyumasan"
                           alt="Motif Batik Banyumasan"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -541,21 +568,21 @@ export default function LandingPage() {
                   <Carousel className="w-full">
                     <CarouselContent>
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/e0f2fe/0ea5e9?text=Foto+Kelompok+Tim+1"
                           alt="Foto Kelompok Tim Mahasiswa P2MW - 1"
                           className="w-full h-full object-cover aspect-[6/5]"
                         />
                       </CarouselItem>
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/fef3c7/d97706?text=Foto+Kelompok+Tim+2"
                           alt="Foto Kelompok Tim Mahasiswa P2MW - 2"
                           className="w-full h-full object-cover aspect-[6/5]"
                         />
                       </CarouselItem>
                       <CarouselItem>
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/600x500/ecfdf5/10b981?text=Foto+Kelompok+Tim+3"
                           alt="Foto Kelompok Tim Mahasiswa P2MW - 3"
                           className="w-full h-full object-cover aspect-[6/5]"
@@ -575,11 +602,9 @@ export default function LandingPage() {
                   <Card className="border-0 shadow-md">
                     <CardContent className="p-3 sm:p-4">
                       <div className="flex items-center space-x-3">
-                        <img
+                        <ClickableImage
                           src="https://placehold.co/60x60/99f6e4/115e59?text=HP"
                           alt="Ns. M. Hanif Prasetya Adhi"
-                          width={60}
-                          height={60}
                           className="w-12 h-12 sm:w-15 sm:h-15 rounded-lg shadow-sm flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
@@ -620,11 +645,9 @@ export default function LandingPage() {
                     <Card className="border-0 shadow-md">
                       <CardContent className="p-3 sm:p-4">
                         <div className="flex items-center space-x-3">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/60x60/bfdbfe/1e40af?text=VD"
                             alt="Vieki Diva Ksatria"
-                            width={60}
-                            height={60}
                             className="w-12 h-12 sm:w-15 sm:h-15 rounded-lg shadow-sm flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
@@ -661,11 +684,9 @@ export default function LandingPage() {
                     <Card className="border-0 shadow-md">
                       <CardContent className="p-3 sm:p-4">
                         <div className="flex items-center space-x-3">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/60x60/fecaca/991b1b?text=R"
                             alt="Ruliyanti"
-                            width={60}
-                            height={60}
                             className="w-12 h-12 sm:w-15 sm:h-15 rounded-lg shadow-sm flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
@@ -702,11 +723,9 @@ export default function LandingPage() {
                     <Card className="border-0 shadow-md">
                       <CardContent className="p-3 sm:p-4">
                         <div className="flex items-center space-x-3">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/60x60/fed7aa/9a3412?text=ISY"
                             alt="Ilham Saifullah Yusup"
-                            width={60}
-                            height={60}
                             className="w-12 h-12 sm:w-15 sm:h-15 rounded-lg shadow-sm flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
@@ -743,11 +762,9 @@ export default function LandingPage() {
                     <Card className="border-0 shadow-md">
                       <CardContent className="p-3 sm:p-4">
                         <div className="flex items-center space-x-3">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/60x60/d8b4fe/581c87?text=DBK"
                             alt="Diva Bagus Kurniawan"
-                            width={60}
-                            height={60}
                             className="w-12 h-12 sm:w-15 sm:h-15 rounded-lg shadow-sm flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
@@ -780,6 +797,69 @@ export default function LandingPage() {
                       </CardContent>
                     </Card>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Bagian Sertifikasi & Legalitas */}
+        <section id="sertifikasi" className="py-12 sm:py-16 lg:py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Sertifikasi & Legalitas
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+                SIKOMJARU telah memiliki legalitas dan sertifikasi resmi sebagai
+                produk inovasi yang terdaftar dan diakui secara hukum.
+              </p>
+            </div>
+
+            {/* Sertifikasi Grid - 2 Items Centered */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
+                Dokumen Resmi
+              </h3>
+              <div className="flex justify-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl">
+                  {/* NIB */}
+                  <Card className="border-0 shadow-lg">
+                    <CardContent className="p-0">
+                      <ClickableImage
+                        src="https://placehold.co/400x300/dbeafe/1e3a8a?text=Surat+NIB+SIKOMJARU"
+                        alt="Surat NIB (Nomor Induk Berusaha) SIKOMJARU"
+                        className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                      />
+                      <div className="p-3 sm:p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                          Surat NIB (Nomor Induk Berusaha)
+                        </h4>
+                        <p className="text-xs sm:text-sm text-gray-600">
+                          Legalitas usaha resmi dari pemerintah Indonesia
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* HKI */}
+                  <Card className="border-0 shadow-lg">
+                    <CardContent className="p-0">
+                      <ClickableImage
+                        src="https://placehold.co/400x300/ecfdf5/10b981?text=Sertifikat+HKI+SIKOMJARU"
+                        alt="Sertifikat HKI (Hak Kekayaan Intelektual) SIKOMJARU"
+                        className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                      />
+                      <div className="p-3 sm:p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                          Sertifikat HKI (Hak Kekayaan Intelektual)
+                        </h4>
+                        <p className="text-xs sm:text-sm text-gray-600">
+                          Perlindungan hukum atas inovasi produk SIKOMJARU
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </div>
@@ -822,11 +902,9 @@ export default function LandingPage() {
                     <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
                       <Card className="border-0 shadow-lg">
                         <CardContent className="p-0">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+SMA"
                             alt="Sosialisasi di SMA Muhammadiyah Tambak"
-                            width={400}
-                            height={300}
                             className="rounded-lg w-full h-36 sm:h-48 object-cover"
                           />
                           <div className="p-3 sm:p-4">
@@ -844,11 +922,9 @@ export default function LandingPage() {
                     <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
                       <Card className="border-0 shadow-lg">
                         <CardContent className="p-0">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+Desa"
                             alt="Sosialisasi di Desa Kalisaleh"
-                            width={400}
-                            height={300}
                             className="rounded-lg w-full h-48 object-cover"
                           />
                           <div className="p-4">
@@ -866,11 +942,9 @@ export default function LandingPage() {
                     <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
                       <Card className="border-0 shadow-lg">
                         <CardContent className="p-0">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Instalasi"
                             alt="Proses Instalasi"
-                            width={400}
-                            height={300}
                             className="rounded-lg w-full h-48 object-cover"
                           />
                           <div className="p-4">
@@ -888,11 +962,9 @@ export default function LandingPage() {
                     <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
                       <Card className="border-0 shadow-lg">
                         <CardContent className="p-0">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+Kader"
                             alt="Sosialisasi ke Kader"
-                            width={400}
-                            height={300}
                             className="rounded-lg w-full h-48 object-cover"
                           />
                           <div className="p-4">
@@ -910,11 +982,9 @@ export default function LandingPage() {
                     <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
                       <Card className="border-0 shadow-lg">
                         <CardContent className="p-0">
-                          <img
+                          <ClickableImage
                             src="https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Perancangan"
                             alt="Proses Perancangan"
-                            width={400}
-                            height={300}
                             className="rounded-lg w-full h-48 object-cover"
                           />
                           <div className="p-4">
@@ -976,61 +1046,51 @@ export default function LandingPage() {
               <Card className="border-0 shadow-xl overflow-hidden">
                 <div className="grid md:grid-cols-2 items-center">
                   {/* Product Image Carousel */}
-                  <div className="relative order-2 md:order-1">
-                    <div className="relative rounded-l-xl overflow-hidden bg-white">
+                  <div className="relative order-1 md:order-1">
+                    <div className="relative rounded-t-xl md:rounded-l-xl md:rounded-tr-none overflow-hidden bg-white">
                       <Carousel className="w-full">
                         <CarouselContent>
                           {/* Slide 1 - Tampak Produk Utama */}
                           <CarouselItem>
-                            <img
+                            <ClickableImage
                               src="https://placehold.co/600x600/dbeafe/1e3a8a?text=SIKOMJARU+Produk+Utama"
                               alt="Produk SIKOMJARU Tampak Utama"
-                              width={600}
-                              height={600}
                               className="w-full h-full object-cover aspect-square"
                             />
                           </CarouselItem>
 
                           {/* Slide 2 - Tampak Samping */}
                           <CarouselItem>
-                            <img
+                            <ClickableImage
                               src="https://placehold.co/600x600/e0f2fe/0ea5e9?text=SIKOMJARU+Tampak+Samping"
                               alt="Produk SIKOMJARU Tampak Samping"
-                              width={600}
-                              height={600}
                               className="w-full h-full object-cover aspect-square"
                             />
                           </CarouselItem>
 
                           {/* Slide 3 - Fitur LCD */}
                           <CarouselItem>
-                            <img
+                            <ClickableImage
                               src="https://placehold.co/600x600/d1fae5/34d399?text=Fitur+LCD+SIKOMJARU"
                               alt="Fitur LCD Digital SIKOMJARU"
-                              width={600}
-                              height={600}
                               className="w-full h-full object-cover aspect-square"
                             />
                           </CarouselItem>
 
                           {/* Slide 4 - Detail Komponen */}
                           <CarouselItem>
-                            <img
+                            <ClickableImage
                               src="https://placehold.co/600x600/fef3c7/d97706?text=Detail+Komponen+SIKOMJARU"
                               alt="Detail Komponen SIKOMJARU"
-                              width={600}
-                              height={600}
                               className="w-full h-full object-cover aspect-square"
                             />
                           </CarouselItem>
 
                           {/* Slide 5 - Motif Batik */}
                           <CarouselItem>
-                            <img
+                            <ClickableImage
                               src="https://placehold.co/600x600/ecfdf5/10b981?text=Motif+Batik+Banyumasan"
                               alt="Motif Batik Banyumasan SIKOMJARU"
-                              width={600}
-                              height={600}
                               className="w-full h-full object-cover aspect-square"
                             />
                           </CarouselItem>
@@ -1051,7 +1111,7 @@ export default function LandingPage() {
                       </Carousel>
                     </div>
                   </div>
-                  <div className="p-6 sm:p-8 order-1 md:order-2">
+                  <div className="p-6 sm:p-8 order-2 md:order-2">
                     <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
                       SIKOMJARU - Phantom Edukasi Kompresi Jantung Paru
                     </h3>
@@ -1118,6 +1178,181 @@ export default function LandingPage() {
                   </div>
                 </div>
               </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Bagian Review & Testimoni */}
+        <section id="review" className="py-12 sm:py-16 lg:py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Review & Testimoni
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+                Kepuasan dan testimoni dari pengguna SIKOMJARU di berbagai
+                institusi pendidikan, rumah sakit, dan komunitas kesehatan di
+                seluruh Indonesia.
+              </p>
+            </div>
+
+            {/* Review Photos Carousel - Horizontal Layout */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
+                Foto Review Pengguna
+              </h3>
+              <div className="relative px-6 sm:px-12">
+                <Carousel className="w-full">
+                  <CarouselContent className="ml-0">
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <ClickableImage
+                            src="https://placehold.co/400x300/e0f2fe/0ea5e9?text=Review+Mahasiswa+Keperawatan"
+                            alt="Review dari Mahasiswa Keperawatan"
+                            className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                          />
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Testimoni Mahasiswa Keperawatan
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Feedback positif dari mahasiswa program studi
+                              keperawatan
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <ClickableImage
+                            src="https://placehold.co/400x300/d1fae5/34d399?text=Review+Tenaga+Medis+RS"
+                            alt="Review dari Tenaga Medis Rumah Sakit"
+                            className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                          />
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Testimoni Tenaga Medis Rumah Sakit
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Apresiasi dari dokter dan perawat profesional
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <ClickableImage
+                            src="https://placehold.co/400x300/fef3c7/d97706?text=Review+Guru+SMK+Kesehatan"
+                            alt="Review dari Guru SMK Kesehatan"
+                            className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                          />
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Testimoni Guru SMK Kesehatan
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Pengalaman menggunakan SIKOMJARU dalam
+                              pembelajaran
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <ClickableImage
+                            src="https://placehold.co/400x300/dbeafe/1e3a8a?text=Review+Kader+Posyandu"
+                            alt="Review dari Kader Posyandu"
+                            className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                          />
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Testimoni Kader Posyandu
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Manfaat SIKOMJARU untuk pelatihan masyarakat
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <ClickableImage
+                            src="https://placehold.co/400x300/ecfdf5/10b981?text=Review+Organisasi+Mahasiswa"
+                            alt="Review dari Organisasi Mahasiswa"
+                            className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                          />
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Testimoni Organisasi Mahasiswa
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Penggunaan untuk pelatihan BHD di kampus
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <ClickableImage
+                            src="https://placehold.co/400x300/fed7aa/9a3412?text=Review+Puskesmas+Daerah"
+                            alt="Review dari Puskesmas Daerah"
+                            className="rounded-lg w-full h-36 sm:h-48 object-cover"
+                          />
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Testimoni Puskesmas Daerah
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Implementasi untuk program kesehatan masyarakat
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+
+                    <CarouselItem className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Card className="border-0 shadow-lg">
+                        <CardContent className="p-0">
+                          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg h-36 sm:h-48 flex items-center justify-center p-6">
+                            <div className="text-center">
+                              <Heart className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                              <p className="text-sm font-semibold text-blue-800">
+                                Kepuasan 100%
+                              </p>
+                            </div>
+                          </div>
+                          <div className="p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+                              Tingkat Kepuasan Tinggi
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              Testimoni dan review positif dari seluruh pengguna
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  </CarouselContent>
+                  <CarouselPrevious className="left-0" />
+                  <CarouselNext className="right-0" />
+                </Carousel>
+              </div>
             </div>
           </div>
         </section>
@@ -1276,7 +1511,7 @@ export default function LandingPage() {
               <div className="flex flex-wrap items-center gap-2 justify-center">
                 {logoPartners.map((logo, index) => (
                   <div key={index} className="relative group">
-                    <img
+                    <ClickableImage
                       src={logo.src}
                       alt={logo.alt}
                       className="h-8 sm:h-10 w-auto object-contain hover:opacity-80 transition-opacity duration-300"
@@ -1316,6 +1551,24 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Image Modal */}
+      <Dialog
+        open={selectedImage !== null}
+        onOpenChange={(open) => !open && setSelectedImage(null)}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden">
+          {selectedImage && (
+            <div className="relative">
+              <img
+                src={selectedImage}
+                alt="Enlarged view"
+                className="w-full h-auto max-h-[85vh] object-contain"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
