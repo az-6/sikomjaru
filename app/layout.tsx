@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/header";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 
 export const metadata: Metadata = {
   title: "SIKOMJARU - Solusi Inovatif Pelatihan Selamatkan Nyawa",
@@ -17,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

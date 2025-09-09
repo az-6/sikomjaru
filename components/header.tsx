@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const logoPartners = [
     { src: "/sj.png", alt: "Sikomjaru Logo", name: "SIKOMJARU" },
@@ -165,6 +167,21 @@ export default function Header() {
                 >
                   Kontak
                 </a>
+
+                {/* Admin Link */}
+                <div className="border-t border-gray-200 pt-3">
+                  <Link
+                    href={isAuthenticated ? "/admin" : "/admin/login"}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 font-medium py-2 px-3 sm:px-4 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Shield className="w-4 h-4" />
+                    <span>
+                      {isAuthenticated ? "Admin Dashboard" : "Admin Login"}
+                    </span>
+                  </Link>
+                </div>
+
                 <div className="pt-3 sm:pt-4 border-t border-gray-200">
                   <Button className="bg-orange-500 hover:bg-orange-600 text-white w-full py-2.5 sm:py-3 text-sm sm:text-lg">
                     <a href="#belanja" onClick={() => setIsMenuOpen(false)}>

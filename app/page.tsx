@@ -31,6 +31,7 @@ import {
   Lightbulb,
   Monitor,
 } from "lucide-react";
+import { CMSText, CMSImage, CMSContent } from "@/components/cms/CMSComponents";
 
 // Komponen untuk ikon media sosial (contoh sederhana)
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -203,15 +204,34 @@ export default function LandingPage() {
                       ))}
                     </div>
 
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-                      SIKOMJARU: Solusi Inovatif Pelatihan{" "}
-                      <span className="text-blue-300">Selamatkan Nyawa</span>
-                    </h1>
-                    <p className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed">
-                      Tingkatkan keterampilan Bantuan Hidup Dasar (BHD) dengan
-                      alat peraga yang akurat, terjangkau, dan mudah digunakan.
-                      Selamatkan nyawa dengan persiapan yang tepat.
-                    </p>
+                    <CMSContent
+                      sectionName="hero"
+                      fallback={
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
+                          SIKOMJARU: Solusi Inovatif Pelatihan{" "}
+                          <span className="text-blue-300">
+                            Selamatkan Nyawa
+                          </span>
+                        </h1>
+                      }
+                    >
+                      {(section) => (
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
+                          {section.title.split(" ").slice(0, -2).join(" ")}{" "}
+                          <span className="text-blue-300">
+                            {section.title.split(" ").slice(-2).join(" ")}
+                          </span>
+                        </h1>
+                      )}
+                    </CMSContent>
+
+                    <CMSText
+                      sectionName="hero"
+                      field="description"
+                      defaultText="Tingkatkan keterampilan Bantuan Hidup Dasar (BHD) dengan alat peraga yang akurat, terjangkau, dan mudah digunakan. Selamatkan nyawa dengan persiapan yang tepat."
+                      className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed"
+                      as="p"
+                    />
                   </div>
                 </div>
                 <div className="relative order-1 lg:order-2">
@@ -300,13 +320,20 @@ export default function LandingPage() {
         <section id="produk" className="py-12 sm:py-16 lg:py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 lg:mb-16">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Produk Inovatif SIKOMJARU
-              </h2>
-              <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-                Dirancang untuk edukasi RJP yang efektif, SIKOMJARU hadir dengan
-                fitur canggih untuk simulasi yang realistis dan terjangkau.
-              </p>
+              <CMSText
+                sectionName="product"
+                field="title"
+                defaultText="Produk Inovatif SIKOMJARU"
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+                as="h2"
+              />
+              <CMSText
+                sectionName="product"
+                field="description"
+                defaultText="Dirancang untuk edukasi RJP yang efektif, SIKOMJARU hadir dengan fitur canggih untuk simulasi yang realistis dan terjangkau."
+                className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4"
+                as="p"
+              />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12 lg:mb-16">
@@ -1532,9 +1559,12 @@ export default function LandingPage() {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">
-                    sikomjaru.official@gmail.com
-                  </span>
+                  <CMSText
+                    settingKey="contact_email"
+                    defaultText="sikomjaru.official@gmail.com"
+                    className="text-gray-400"
+                    as="span"
+                  />
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-5 h-5 text-blue-400" />
