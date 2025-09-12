@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getSupabaseServiceClient,
+  getSupabaseAuthClient,
+} from "@/lib/supabase/api";
 
 export async function GET() {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getSupabaseServiceClient();
     const { data, error } = await supabase
       .from("profil_sections")
       .select("*")
@@ -70,11 +70,7 @@ export async function PUT(request: Request) {
     if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { global: { headers: { Authorization: `Bearer ${accessToken}` } } }
-    );
+    const supabase = getSupabaseAuthClient(accessToken);
     const data = await request.json();
 
     // Serialize arrays untuk JSONB

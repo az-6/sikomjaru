@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import {
+  getSupabaseServiceClient,
+  getSupabaseAuthClient,
+} from "@/lib/supabase/api";
 
 interface SpecialContent {
   icon: string;
@@ -25,10 +28,7 @@ interface ReviewSection {
 
 export async function GET() {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getSupabaseServiceClient();
     const { data, error } = await supabase
       .from("review_sections")
       .select("*")
@@ -75,11 +75,7 @@ export async function PUT(request: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { global: { headers: { Authorization: `Bearer ${accessToken}` } } }
-    );
+    const supabase = getSupabaseAuthClient(accessToken);
     const body = await request.json();
     const { title, subtitle, photos_title, review_items } =
       body as ReviewSection;
