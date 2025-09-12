@@ -91,13 +91,21 @@ INSERT INTO belanja_sections (
 -- Set up Row Level Security (RLS)
 ALTER TABLE belanja_sections ENABLE ROW LEVEL SECURITY;
 
+
 -- Drop existing policies if they exist
 DROP POLICY IF EXISTS "Allow all operations on belanja_sections for development" ON belanja_sections;
+DROP POLICY IF EXISTS "Allow public read access on belanja_sections" ON belanja_sections;
+DROP POLICY IF EXISTS "Allow authenticated modify access on belanja_sections" ON belanja_sections;
 
--- Create policies for development (allow all operations)
--- In production, you should restrict these policies
-CREATE POLICY "Allow all operations on belanja_sections for development" ON belanja_sections
-  FOR ALL USING (true) WITH CHECK (true);
+-- Allow public read access
+CREATE POLICY "Allow public read access on belanja_sections" ON belanja_sections
+  FOR SELECT USING (true);
+
+-- Allow only authenticated users to insert, update, or delete
+CREATE POLICY "Allow authenticated modify access on belanja_sections" ON belanja_sections
+  FOR ALL
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
 
 -- Drop existing trigger and function if they exist
 DROP TRIGGER IF EXISTS update_belanja_sections_updated_at ON belanja_sections;

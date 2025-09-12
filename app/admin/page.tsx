@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { uploadImage, deleteImage } from "@/lib/imageUpload";
 import AdminHeader from "@/components/AdminHeader";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -204,6 +205,7 @@ interface FooterSection {
 }
 
 export default function AdminPanel() {
+  const { session } = useAuth();
   const [homeSection, setHomeSection] = useState<HomeSection>({
     title: "",
     subtitle: "",
@@ -312,6 +314,28 @@ export default function AdminPanel() {
     useState(false);
   const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
   const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const [isPenelitianImageModalOpen, setIsPenelitianImageModalOpen] =
+    useState(false);
+  const [isUploadingPenelitianImage, setIsUploadingPenelitianImage] =
+    useState(false);
+  const [penelitianImageForm, setPenelitianImageForm] = useState({
+    type: "image" as "image" | "video",
+    url: "",
+    title: "",
+    description: "",
+  });
+
+  // Helper function to get headers with auth token
+  const getAuthHeaders = () => {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (session?.access_token) {
+      headers["Authorization"] = `Bearer ${session.access_token}`;
+    }
+    return headers;
+  };
+
   const [editingMemberIndex, setEditingMemberIndex] = useState<number | null>(
     null
   );
@@ -466,9 +490,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/home", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           homeSection,
         }),
@@ -521,9 +543,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/produk", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(produkSection),
       });
 
@@ -574,9 +594,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/profil", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(profilSection),
       });
 
@@ -627,9 +645,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/sertifikasi", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(sertifikasiSection),
       });
 
@@ -1111,9 +1127,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/penelitian", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(penelitianSection),
       });
 
@@ -1164,9 +1178,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/belanja", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(belanjaSection),
       });
 
@@ -1217,9 +1229,7 @@ export default function AdminPanel() {
       setIsSaving(true);
       const response = await fetch("/api/cms/review", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(reviewSection),
       });
 
@@ -1283,9 +1293,7 @@ export default function AdminPanel() {
 
       const response = await fetch("/api/cms/footer", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(footerSection),
       });
 
@@ -1319,45 +1327,92 @@ export default function AdminPanel() {
   };
 
   const addPenelitianCarouselItem = async (type: "image" | "video") => {
-    if (type === "image") {
-      const newImage = prompt("Masukkan URL gambar:");
-      if (newImage) {
-        const title = prompt("Masukkan judul gambar (opsional):") || "";
-        const description =
-          prompt("Masukkan deskripsi gambar (opsional):") || "";
-        const newItem: MediaItem = {
-          type: "image",
-          url: newImage,
-          title: title,
-          description: description,
-        };
-        setPenelitianSection((prev) => ({
+    setPenelitianImageForm({
+      type,
+      url: "",
+      title: "",
+      description: "",
+    });
+    setIsPenelitianImageModalOpen(true);
+  };
+
+  const savePenelitianCarouselItem = () => {
+    const urlValue =
+      typeof penelitianImageForm.url === "string"
+        ? penelitianImageForm.url
+        : "";
+    if (!urlValue.trim()) {
+      toast({
+        title: "Error",
+        description: "URL tidak boleh kosong",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    let finalUrl = urlValue;
+    if (penelitianImageForm.type === "video") {
+      const videoId = getYouTubeVideoId(urlValue);
+      if (videoId) {
+        finalUrl = videoId;
+      } else {
+        toast({
+          title: "Error",
+          description: "URL YouTube tidak valid",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    const newItem: MediaItem = {
+      type: penelitianImageForm.type,
+      url: finalUrl,
+      title: penelitianImageForm.title,
+      description: penelitianImageForm.description,
+    };
+
+    setPenelitianSection((prev) => ({
+      ...prev,
+      carousel_items: [...(prev.carousel_items || []), newItem],
+    }));
+
+    setIsPenelitianImageModalOpen(false);
+    setPenelitianImageForm({
+      type: "image",
+      url: "",
+      title: "",
+      description: "",
+    });
+  };
+
+  const uploadPenelitianImageModal = async (file: File) => {
+    try {
+      setIsUploadingPenelitianImage(true);
+      const result = await uploadImage(file, "penelitian");
+
+      if (result.success && result.url) {
+        setPenelitianImageForm((prev) => ({
           ...prev,
-          carousel_items: [...(prev.carousel_items || []), newItem],
+          url: result.url || "",
         }));
+        toast({
+          title: "Berhasil!",
+          description: "Gambar berhasil diupload",
+        });
+      } else {
+        throw new Error(result.error || "Gagal mengupload gambar");
       }
-    } else {
-      const videoUrl = prompt("Masukkan URL YouTube:");
-      if (videoUrl) {
-        const videoId = getYouTubeVideoId(videoUrl);
-        if (videoId) {
-          const title = prompt("Masukkan judul video (opsional):") || "";
-          const description =
-            prompt("Masukkan deskripsi video (opsional):") || "";
-          const newItem: MediaItem = {
-            type: "video",
-            url: videoId,
-            title: title,
-            description: description,
-          };
-          setPenelitianSection((prev) => ({
-            ...prev,
-            carousel_items: [...(prev.carousel_items || []), newItem],
-          }));
-        } else {
-          alert("URL YouTube tidak valid");
-        }
-      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Gagal mengupload gambar",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingPenelitianImage(false);
     }
   };
 
@@ -4718,16 +4773,21 @@ export default function AdminPanel() {
                           open={isImageReviewModalOpen}
                           onOpenChange={setIsImageReviewModalOpen}
                         >
-                          <DialogContent className="max-w-md w-full">
+                          <DialogContent className="w-[95vw] max-w-md mx-auto">
                             <DialogHeader>
-                              <DialogTitle>Tambah Image Review</DialogTitle>
+                              <DialogTitle className="text-lg sm:text-xl">
+                                Tambah Image Review
+                              </DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-4">
+                            <div className="space-y-4 p-1">
                               <div>
-                                <Label>Upload Gambar</Label>
+                                <Label className="text-sm font-medium">
+                                  Upload Gambar
+                                </Label>
                                 <input
                                   type="file"
                                   accept="image/*"
+                                  className="w-full mt-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                   onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
@@ -4740,15 +4800,17 @@ export default function AdminPanel() {
                                   }}
                                 />
                                 {newImageReview.file && (
-                                  <div className="mt-2">
-                                    <span className="text-xs text-gray-500">
-                                      {newImageReview.file.name}
+                                  <div className="mt-2 p-2 bg-gray-50 rounded-md">
+                                    <span className="text-xs text-gray-600 break-all">
+                                      📎 {newImageReview.file.name}
                                     </span>
                                   </div>
                                 )}
                               </div>
                               <div>
-                                <Label>atau URL Gambar</Label>
+                                <Label className="text-sm font-medium">
+                                  atau URL Gambar
+                                </Label>
                                 <Input
                                   value={newImageReview.url}
                                   onChange={(e) =>
@@ -4759,10 +4821,13 @@ export default function AdminPanel() {
                                     }))
                                   }
                                   placeholder="https://..."
+                                  className="mt-1"
                                 />
                               </div>
                               <div>
-                                <Label>Judul</Label>
+                                <Label className="text-sm font-medium">
+                                  Judul
+                                </Label>
                                 <Input
                                   value={newImageReview.title}
                                   onChange={(e) =>
@@ -4772,10 +4837,13 @@ export default function AdminPanel() {
                                     }))
                                   }
                                   placeholder="Judul review (opsional)"
+                                  className="mt-1"
                                 />
                               </div>
                               <div>
-                                <Label>Deskripsi</Label>
+                                <Label className="text-sm font-medium">
+                                  Deskripsi
+                                </Label>
                                 <Textarea
                                   value={newImageReview.description}
                                   onChange={(e) =>
@@ -4786,20 +4854,23 @@ export default function AdminPanel() {
                                   }
                                   placeholder="Deskripsi review (opsional)"
                                   rows={2}
+                                  className="mt-1 resize-none"
                                 />
                               </div>
-                              <div className="flex justify-end gap-2">
+                              <div className="flex flex-col sm:flex-row gap-2 pt-2">
                                 <Button
                                   variant="outline"
                                   onClick={() =>
                                     setIsImageReviewModalOpen(false)
                                   }
+                                  className="w-full sm:w-auto order-2 sm:order-1"
                                 >
                                   Batal
                                 </Button>
                                 <Button
                                   onClick={handleSubmitImageReview}
                                   disabled={isUploadingImageReview}
+                                  className="w-full sm:w-auto order-1 sm:order-2"
                                 >
                                   {isUploadingImageReview
                                     ? "Menyimpan..."
@@ -4815,13 +4886,17 @@ export default function AdminPanel() {
                           open={isSpecialReviewModalOpen}
                           onOpenChange={setIsSpecialReviewModalOpen}
                         >
-                          <DialogContent className="max-w-md w-full">
+                          <DialogContent className="w-[95vw] max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>Tambah Special Item</DialogTitle>
+                              <DialogTitle className="text-lg sm:text-xl">
+                                Tambah Special Item
+                              </DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-4">
+                            <div className="space-y-4 p-1">
                               <div>
-                                <Label>Judul</Label>
+                                <Label className="text-sm font-medium">
+                                  Judul
+                                </Label>
                                 <Input
                                   value={newSpecialReview.title}
                                   onChange={(e) =>
@@ -4831,10 +4906,13 @@ export default function AdminPanel() {
                                     }))
                                   }
                                   placeholder="Judul special item"
+                                  className="mt-1"
                                 />
                               </div>
                               <div>
-                                <Label>Deskripsi</Label>
+                                <Label className="text-sm font-medium">
+                                  Deskripsi
+                                </Label>
                                 <Textarea
                                   value={newSpecialReview.description}
                                   onChange={(e) =>
@@ -4845,10 +4923,13 @@ export default function AdminPanel() {
                                   }
                                   placeholder="Deskripsi special item"
                                   rows={2}
+                                  className="mt-1 resize-none"
                                 />
                               </div>
                               <div>
-                                <Label>Text</Label>
+                                <Label className="text-sm font-medium">
+                                  Text
+                                </Label>
                                 <Input
                                   value={newSpecialReview.text}
                                   onChange={(e) =>
@@ -4858,10 +4939,13 @@ export default function AdminPanel() {
                                     }))
                                   }
                                   placeholder="Kepuasan 100%"
+                                  className="mt-1"
                                 />
                               </div>
                               <div>
-                                <Label>Icon</Label>
+                                <Label className="text-sm font-medium">
+                                  Icon
+                                </Label>
                                 <Input
                                   value={newSpecialReview.icon}
                                   onChange={(e) =>
@@ -4871,14 +4955,17 @@ export default function AdminPanel() {
                                     }))
                                   }
                                   placeholder="Heart"
+                                  className="mt-1"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                                   Gunakan nama icon dari lucide-react, misal:
                                   Heart, Star, Smile, dll.
                                 </p>
                               </div>
                               <div>
-                                <Label>Background</Label>
+                                <Label className="text-sm font-medium">
+                                  Background
+                                </Label>
                                 <Input
                                   value={newSpecialReview.background}
                                   onChange={(e) =>
@@ -4888,22 +4975,27 @@ export default function AdminPanel() {
                                     }))
                                   }
                                   placeholder="from-blue-50 to-blue-100"
+                                  className="mt-1"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                                   Contoh: from-blue-50 to-blue-100,
                                   from-green-50 to-green-100, dll.
                                 </p>
                               </div>
-                              <div className="flex justify-end gap-2">
+                              <div className="flex flex-col sm:flex-row gap-2 pt-2">
                                 <Button
                                   variant="outline"
                                   onClick={() =>
                                     setIsSpecialReviewModalOpen(false)
                                   }
+                                  className="w-full sm:w-auto order-2 sm:order-1"
                                 >
                                   Batal
                                 </Button>
-                                <Button onClick={handleSubmitSpecialReview}>
+                                <Button
+                                  onClick={handleSubmitSpecialReview}
+                                  className="w-full sm:w-auto order-1 sm:order-2"
+                                >
                                   Tambah
                                 </Button>
                               </div>
@@ -5308,38 +5400,25 @@ export default function AdminPanel() {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="Phone">
-                                  📞 Phone - WhatsApp/Telepon
+                                  WhatsApp/Telepon
                                 </SelectItem>
                                 <SelectItem value="MessageCircle">
-                                  💬 MessageCircle - Chat/WhatsApp
+                                  Chat/WhatsApp
                                 </SelectItem>
                                 <SelectItem value="Instagram">
-                                  📷 Instagram - Instagram
+                                  Instagram
                                 </SelectItem>
                                 <SelectItem value="Facebook">
-                                  👥 Facebook - Facebook
+                                  Facebook
                                 </SelectItem>
-                                <SelectItem value="Youtube">
-                                  📺 Youtube - YouTube
-                                </SelectItem>
+                                <SelectItem value="Youtube">YouTube</SelectItem>
                                 <SelectItem value="Twitter">
-                                  🐦 Twitter - Twitter/X
+                                  Twitter/X
                                 </SelectItem>
                                 <SelectItem value="Linkedin">
-                                  💼 Linkedin - LinkedIn
+                                  LinkedIn
                                 </SelectItem>
-                                <SelectItem value="Music">
-                                  🎵 Music - TikTok
-                                </SelectItem>
-                                <SelectItem value="Mail">
-                                  📧 Mail - Email
-                                </SelectItem>
-                                <SelectItem value="Globe">
-                                  🌐 Globe - Website
-                                </SelectItem>
-                                <SelectItem value="MapPin">
-                                  📍 MapPin - Lokasi
-                                </SelectItem>
+                                <SelectItem value="tiktok">TikTok</SelectItem>
                               </SelectContent>
                             </Select>
                             <p className="text-xs text-gray-500 mt-1">
@@ -5575,6 +5654,165 @@ export default function AdminPanel() {
                             <Button
                               variant="outline"
                               onClick={() => setIsPlatformModalOpen(false)}
+                            >
+                              Batal
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Modal Tambah Gambar/Video Penelitian */}
+                    <Dialog
+                      open={isPenelitianImageModalOpen}
+                      onOpenChange={setIsPenelitianImageModalOpen}
+                    >
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>
+                            Tambah{" "}
+                            {penelitianImageForm.type === "image"
+                              ? "Gambar"
+                              : "Video"}{" "}
+                            Penelitian
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div>
+                            <Label htmlFor="penelitian-url">
+                              {penelitianImageForm.type === "image"
+                                ? "URL Gambar"
+                                : "URL YouTube"}
+                            </Label>
+                            {penelitianImageForm.type === "image" ? (
+                              <div className="space-y-2">
+                                {penelitianImageForm.url && (
+                                  <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2">
+                                    <img
+                                      src={penelitianImageForm.url}
+                                      alt="Preview"
+                                      className="w-20 h-20 rounded-lg object-cover"
+                                    />
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        setPenelitianImageForm((prev) => ({
+                                          ...prev,
+                                          url: "",
+                                        }))
+                                      }
+                                    >
+                                      Hapus
+                                    </Button>
+                                  </div>
+                                )}
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <label className="cursor-pointer flex-1">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isUploadingPenelitianImage}
+                                      className="w-full"
+                                      asChild
+                                    >
+                                      <span>
+                                        <Upload className="w-4 h-4 mr-2" />
+                                        {isUploadingPenelitianImage
+                                          ? "Upload..."
+                                          : "Upload Foto"}
+                                      </span>
+                                    </Button>
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          uploadPenelitianImageModal(file);
+                                          e.target.value = "";
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                </div>
+                                <Input
+                                  id="penelitian-url"
+                                  value={penelitianImageForm.url}
+                                  onChange={(e) =>
+                                    setPenelitianImageForm((prev) => ({
+                                      ...prev,
+                                      url: e.target.value,
+                                    }))
+                                  }
+                                  placeholder="Atau masukkan URL gambar"
+                                />
+                              </div>
+                            ) : (
+                              <Input
+                                id="penelitian-url"
+                                value={penelitianImageForm.url}
+                                onChange={(e) =>
+                                  setPenelitianImageForm((prev) => ({
+                                    ...prev,
+                                    url: e.target.value,
+                                  }))
+                                }
+                                placeholder="https://youtube.com/watch?v=..."
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <Label htmlFor="penelitian-title">
+                              Judul (Opsional)
+                            </Label>
+                            <Input
+                              id="penelitian-title"
+                              value={penelitianImageForm.title}
+                              onChange={(e) =>
+                                setPenelitianImageForm((prev) => ({
+                                  ...prev,
+                                  title: e.target.value,
+                                }))
+                              }
+                              placeholder="Masukkan judul"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="penelitian-description">
+                              Deskripsi (Opsional)
+                            </Label>
+                            <Textarea
+                              id="penelitian-description"
+                              value={penelitianImageForm.description}
+                              onChange={(e) =>
+                                setPenelitianImageForm((prev) => ({
+                                  ...prev,
+                                  description: e.target.value,
+                                }))
+                              }
+                              placeholder="Masukkan deskripsi"
+                              rows={3}
+                            />
+                          </div>
+                          <div className="flex gap-2 pt-4">
+                            <Button
+                              onClick={savePenelitianCarouselItem}
+                              className="flex-1"
+                            >
+                              Tambah{" "}
+                              {penelitianImageForm.type === "image"
+                                ? "Gambar"
+                                : "Video"}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() =>
+                                setIsPenelitianImageModalOpen(false)
+                              }
                             >
                               Batal
                             </Button>

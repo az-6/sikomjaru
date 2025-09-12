@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
 
 interface SertifikasiSection {
   id?: string;
@@ -16,18 +16,20 @@ interface SertifikasiSection {
 
 export async function GET() {
   try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     const { data, error } = await supabase
       .from("sertifikasi_sections")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
-
     if (error) {
       console.error("Error fetching sertifikasi section:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
     return NextResponse.json(data);
   } catch (error) {
     console.error("Unexpected error:", error);
@@ -40,20 +42,25 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const authHeader = request.headers.get("authorization");
+    const accessToken = authHeader?.split(" ")[1];
+    if (!accessToken) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { global: { headers: { Authorization: `Bearer ${accessToken}` } } }
+    );
     const body: SertifikasiSection = await request.json();
-
-    // Get existing data first
     const { data: existingData } = await supabase
       .from("sertifikasi_sections")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
-
     let result;
-
     if (existingData) {
-      // Update existing record
       const { data, error } = await supabase
         .from("sertifikasi_sections")
         .update({
@@ -70,15 +77,12 @@ export async function PUT(request: NextRequest) {
         .eq("id", existingData.id)
         .select()
         .single();
-
       if (error) {
         console.error("Error updating sertifikasi section:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
-
       result = data;
     } else {
-      // Create new record
       const { data, error } = await supabase
         .from("sertifikasi_sections")
         .insert([
@@ -96,15 +100,12 @@ export async function PUT(request: NextRequest) {
         ])
         .select()
         .single();
-
       if (error) {
         console.error("Error creating sertifikasi section:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
-
       result = data;
     }
-
     return NextResponse.json(result);
   } catch (error) {
     console.error("Unexpected error:", error);
