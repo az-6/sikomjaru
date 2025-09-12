@@ -2,6 +2,7 @@
 
 import { useFooterData } from "@/hooks/use-footer-data";
 import { Mail, Phone, MapPin } from "lucide-react";
+import Image from "next/image";
 
 // Komponen untuk ikon media sosial
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -116,9 +117,52 @@ interface FooterSectionProps {
   }>;
 }
 
+// Default logo partners (sama seperti HomeSection)
+const defaultLogoPartners = [
+  {
+    src: "/ump.png",
+    alt: "UMP Logo",
+    name: "Universitas Muhammadiyah Purwokerto",
+  },
+  { src: "/fikes.png", alt: "FIKES Logo", name: "Fakultas Ilmu Kesehatan" },
+  {
+    src: "/p2mw.png",
+    alt: "P2MW Logo",
+    name: "Program Pemberdayaan Masyarakat Wirausaha",
+  },
+  { src: "/logo.png", alt: "Diktisaintek", name: "Diktisaintek" },
+  {
+    src: "/isbi.png",
+    alt: "ISBI Logo",
+    name: "Islamic Student Business Incubator",
+  },
+];
+
+// Default ClickableImage jika tidak diberikan
+const DefaultClickableImage = ({
+  src,
+  alt,
+  className,
+  onError,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  onError?: (e: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+}) => (
+  <img
+    src={src}
+    alt={alt}
+    className={`cursor-pointer hover:opacity-90 transition-opacity ${
+      className || ""
+    }`}
+    onError={onError}
+  />
+);
+
 export default function FooterSection({
-  logoPartners,
-  ClickableImage,
+  logoPartners = defaultLogoPartners,
+  ClickableImage = DefaultClickableImage,
 }: FooterSectionProps) {
   const { footerSection, loading, error } = useFooterData();
 
@@ -156,9 +200,13 @@ export default function FooterSection({
           {/* Company Info */}
           <div className="space-y-3 sm:space-y-4 col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">SJ</span>
-              </div>
+              <Image
+                src="/sj.png"
+                alt="SIKOMJARU Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+              />
               <span className="text-lg sm:text-xl font-bold">
                 {footerSection.company_name}
               </span>
@@ -221,23 +269,25 @@ export default function FooterSection({
           {logoPartners && ClickableImage && (
             <div>
               <h3 className="text-lg font-semibold mb-4">Logo Partners</h3>
-              <div className="flex flex-wrap items-center gap-2 justify-center">
-                {logoPartners.map((logo, index) => (
-                  <div key={index} className="relative group">
-                    <ClickableImage
-                      src={logo.src}
-                      alt={logo.alt}
-                      className="h-8 sm:h-10 w-auto object-contain hover:opacity-80 transition-opacity duration-300"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                    {/* Tooltip */}
-                    <div className="hidden sm:block absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50">
-                      {logo.name}
+              <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 sm:p-4 mb-4 shadow-md mx-auto w-fit max-w-full">
+                <div className="flex flex-wrap items-center gap-2 justify-center">
+                  {logoPartners.map((logo, index) => (
+                    <div key={index} className="relative group">
+                      <ClickableImage
+                        src={logo.src}
+                        alt={logo.alt}
+                        className="h-8 sm:h-10 w-auto object-contain hover:opacity-80 transition-opacity duration-300"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                      {/* Tooltip */}
+                      <div className="hidden sm:block absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50">
+                        {logo.name}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}

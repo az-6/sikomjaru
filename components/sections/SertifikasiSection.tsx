@@ -3,6 +3,13 @@
 import { useSertifikasiData } from "@/hooks/use-sertifikasi-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { ClickableImage } from "@/components/ui/ClickableImage";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function SertifikasiSection() {
   const { sertifikasiData, loading, error } = useSertifikasiData();
@@ -50,25 +57,63 @@ export default function SertifikasiSection() {
           </p>
         </div>
 
-        {/* Sertifikasi Grid - 2 Items Centered */}
+        {/* Sertifikasi Grid - 2 Items Centered with Carousels */}
         <div>
           <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
             {sertifikasiData.documents_title}
           </h3>
           <div className="flex justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl w-full">
               {/* NIB */}
               <Card className="border-0 shadow-lg">
                 <CardContent className="p-0">
-                  {sertifikasiData.nib_image &&
-                  sertifikasiData.nib_image.trim() !== "" ? (
-                    <ClickableImage
-                      src={sertifikasiData.nib_image}
-                      alt={sertifikasiData.nib_title}
-                      className="rounded-lg w-full h-36 sm:h-48 object-cover"
-                    />
+                  {sertifikasiData.nib_carousel_items &&
+                  sertifikasiData.nib_carousel_items.length > 0 ? (
+                    <div className="relative">
+                      {sertifikasiData.nib_carousel_items.length === 1 ? (
+                        // Single image - no carousel needed
+                        <ClickableImage
+                          src={sertifikasiData.nib_carousel_items[0].url}
+                          alt={
+                            sertifikasiData.nib_carousel_items[0].title ||
+                            sertifikasiData.nib_title
+                          }
+                          className="rounded-t-lg w-full h-72 sm:h-80 lg:h-96 object-cover"
+                        />
+                      ) : (
+                        // Multiple images - show carousel
+                        <Carousel
+                          opts={{
+                            align: "start",
+                            loop: true,
+                          }}
+                          className="w-full"
+                        >
+                          <CarouselContent>
+                            {sertifikasiData.nib_carousel_items.map(
+                              (item, index) => (
+                                <CarouselItem key={index}>
+                                  <ClickableImage
+                                    src={item.url}
+                                    alt={
+                                      item.title ||
+                                      `${sertifikasiData.nib_title} ${
+                                        index + 1
+                                      }`
+                                    }
+                                    className="rounded-t-lg w-full h-72 sm:h-80 lg:h-96 object-cover"
+                                  />
+                                </CarouselItem>
+                              )
+                            )}
+                          </CarouselContent>
+                          <CarouselPrevious className="left-2" />
+                          <CarouselNext className="right-2" />
+                        </Carousel>
+                      )}
+                    </div>
                   ) : (
-                    <div className="bg-gray-100 rounded-lg h-36 sm:h-48 flex items-center justify-center">
+                    <div className="bg-gray-100 rounded-t-lg h-72 sm:h-80 lg:h-96 flex items-center justify-center">
                       <p className="text-gray-500 text-sm">
                         Foto NIB belum diupload
                       </p>
@@ -88,15 +133,53 @@ export default function SertifikasiSection() {
               {/* HKI */}
               <Card className="border-0 shadow-lg">
                 <CardContent className="p-0">
-                  {sertifikasiData.hki_image &&
-                  sertifikasiData.hki_image.trim() !== "" ? (
-                    <ClickableImage
-                      src={sertifikasiData.hki_image}
-                      alt={sertifikasiData.hki_title}
-                      className="rounded-lg w-full h-36 sm:h-48 object-cover"
-                    />
+                  {sertifikasiData.hki_carousel_items &&
+                  sertifikasiData.hki_carousel_items.length > 0 ? (
+                    <div className="relative">
+                      {sertifikasiData.hki_carousel_items.length === 1 ? (
+                        // Single image - no carousel needed
+                        <ClickableImage
+                          src={sertifikasiData.hki_carousel_items[0].url}
+                          alt={
+                            sertifikasiData.hki_carousel_items[0].title ||
+                            sertifikasiData.hki_title
+                          }
+                          className="rounded-t-lg w-full h-72 sm:h-80 lg:h-96 object-cover"
+                        />
+                      ) : (
+                        // Multiple images - show carousel
+                        <Carousel
+                          opts={{
+                            align: "start",
+                            loop: true,
+                          }}
+                          className="w-full"
+                        >
+                          <CarouselContent>
+                            {sertifikasiData.hki_carousel_items.map(
+                              (item, index) => (
+                                <CarouselItem key={index}>
+                                  <ClickableImage
+                                    src={item.url}
+                                    alt={
+                                      item.title ||
+                                      `${sertifikasiData.hki_title} ${
+                                        index + 1
+                                      }`
+                                    }
+                                    className="rounded-t-lg w-full h-72 sm:h-80 lg:h-96 object-cover"
+                                  />
+                                </CarouselItem>
+                              )
+                            )}
+                          </CarouselContent>
+                          <CarouselPrevious className="left-2" />
+                          <CarouselNext className="right-2" />
+                        </Carousel>
+                      )}
+                    </div>
                   ) : (
-                    <div className="bg-gray-100 rounded-lg h-36 sm:h-48 flex items-center justify-center">
+                    <div className="bg-gray-100 rounded-t-lg h-72 sm:h-80 lg:h-96 flex items-center justify-center">
                       <p className="text-gray-500 text-sm">
                         Foto HKI belum diupload
                       </p>

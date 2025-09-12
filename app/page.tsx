@@ -131,9 +131,9 @@ export default function LandingPage() {
       alt: "P2MW Logo",
       name: "Program Pemberdayaan Masyarakat Wirausaha",
     },
-    { src: "/logo.png", alt: "Official Logo", name: "Official Logo" },
+    { src: "/logo.png", alt: "Diktisaintek", name: "Diktisaintek" },
     {
-      src: "/isbi.jpg",
+      src: "/isbi.png",
       alt: "ISBI Logo",
       name: "Islamic Student Business Incubator",
     },

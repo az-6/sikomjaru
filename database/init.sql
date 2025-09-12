@@ -147,8 +147,8 @@ INSERT INTO logo_partners (name, image_url, alt_text, order_index) VALUES
 ('Universitas Muhammadiyah Purwokerto', '/ump.png', 'UMP Logo', 1),
 ('Fakultas Ilmu Kesehatan', '/fikes.png', 'FIKES Logo', 2),
 ('Program Pemberdayaan Masyarakat Wirausaha', '/p2mw.png', 'P2MW Logo', 3),
-('Official Logo', '/logo.png', 'Official Logo', 4),
-('Islamic Student Business Incubator', '/isbi.jpg', 'ISBI Logo', 5);
+('Diktisaintek', '/logo.png', 'Diktisaintek', 4),
+('Islamic Student Business Incubator', '/isbi.png', 'ISBI Logo', 5);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE home_sections ENABLE ROW LEVEL SECURITY;

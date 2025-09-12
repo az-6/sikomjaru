@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
 
+interface MediaItem {
+  type: "image" | "video";
+  url: string;
+  title?: string;
+  description?: string;
+}
+
 interface SertifikasiSection {
   id?: string;
   title: string;
@@ -7,10 +14,10 @@ interface SertifikasiSection {
   documents_title: string;
   nib_title: string;
   nib_description: string;
-  nib_image: string;
+  nib_carousel_items: MediaItem[];
   hki_title: string;
   hki_description: string;
-  hki_image: string;
+  hki_carousel_items: MediaItem[];
 }
 
 export function useSertifikasiData() {

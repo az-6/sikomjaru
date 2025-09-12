@@ -1,5 +1,14 @@
-import Link from "next/link"
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 export default function Footer() {
   return (
@@ -9,26 +18,42 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">S</span>
-              </div>
+              <Image
+                src="/sj.png"
+                alt="SIKOMJARU Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+              />
               <span className="text-xl font-bold">SIKOMJARU</span>
             </div>
             <p className="text-gray-400 leading-relaxed">
-              Innovative CPR training phantom revolutionizing life-saving education for healthcare professionals and the
-              public.
+              Innovative CPR training phantom revolutionizing life-saving
+              education for healthcare professionals and the public.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-teal-400 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-teal-400 transition-colors"
+              >
                 <Facebook className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-teal-400 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-teal-400 transition-colors"
+              >
                 <Twitter className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-teal-400 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-teal-400 transition-colors"
+              >
                 <Instagram className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-teal-400 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-teal-400 transition-colors"
+              >
                 <Linkedin className="w-5 h-5" />
               </Link>
             </div>
@@ -38,19 +63,34 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <nav className="flex flex-col space-y-2">
-              <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/about"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 About Us
               </Link>
-              <Link href="/product" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/product"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Product
               </Link>
-              <Link href="/training" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/training"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Training Programs
               </Link>
-              <Link href="/resources" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/resources"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Resources
               </Link>
-              <Link href="/testimonials" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/testimonials"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Testimonials
               </Link>
             </nav>
@@ -60,16 +100,28 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Services</h3>
             <nav className="flex flex-col space-y-2">
-              <Link href="/training" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/training"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Basic CPR Training
               </Link>
-              <Link href="/training" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/training"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Advanced CPR
               </Link>
-              <Link href="/training" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/training"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Corporate Training
               </Link>
-              <Link href="/training" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/training"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Instructor Certification
               </Link>
             </nav>
@@ -97,12 +149,20 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400 text-sm">© {new Date().getFullYear()} SIKOMJARU. All rights reserved.</p>
+            <p className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} SIKOMJARU. All rights reserved.
+            </p>
             <div className="flex space-x-6 text-sm">
-              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/privacy"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/terms"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Terms of Service
               </Link>
             </div>
@@ -110,5 +170,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

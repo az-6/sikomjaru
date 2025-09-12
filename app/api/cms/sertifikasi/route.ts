@@ -4,6 +4,13 @@ import {
   getSupabaseAuthClient,
 } from "@/lib/supabase/api";
 
+interface MediaItem {
+  type: "image" | "video";
+  url: string;
+  title?: string;
+  description?: string;
+}
+
 interface SertifikasiSection {
   id?: string;
   title: string;
@@ -11,10 +18,10 @@ interface SertifikasiSection {
   documents_title: string;
   nib_title: string;
   nib_description: string;
-  nib_image: string;
+  nib_carousel_items: MediaItem[];
   hki_title: string;
   hki_description: string;
-  hki_image: string;
+  hki_carousel_items: MediaItem[];
 }
 
 export async function GET() {
@@ -65,10 +72,10 @@ export async function PUT(request: NextRequest) {
           documents_title: body.documents_title,
           nib_title: body.nib_title,
           nib_description: body.nib_description,
-          nib_image: body.nib_image,
+          nib_carousel_items: body.nib_carousel_items,
           hki_title: body.hki_title,
           hki_description: body.hki_description,
-          hki_image: body.hki_image,
+          hki_carousel_items: body.hki_carousel_items,
         })
         .eq("id", existingData.id)
         .select()
@@ -88,10 +95,10 @@ export async function PUT(request: NextRequest) {
             documents_title: body.documents_title,
             nib_title: body.nib_title,
             nib_description: body.nib_description,
-            nib_image: body.nib_image,
+            nib_carousel_items: body.nib_carousel_items,
             hki_title: body.hki_title,
             hki_description: body.hki_description,
-            hki_image: body.hki_image,
+            hki_carousel_items: body.hki_carousel_items,
           },
         ])
         .select()

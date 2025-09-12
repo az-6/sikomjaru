@@ -133,10 +133,10 @@ interface SertifikasiSection {
   documents_title: string;
   nib_title: string;
   nib_description: string;
-  nib_image: string;
+  nib_carousel_items: MediaItem[];
   hki_title: string;
   hki_description: string;
-  hki_image: string;
+  hki_carousel_items: MediaItem[];
 }
 
 interface PenelitianSection {
@@ -254,12 +254,10 @@ export default function AdminPanel() {
       documents_title: "Dokumen Resmi",
       nib_title: "Surat NIB (Nomor Induk Berusaha)",
       nib_description: "Legalitas usaha resmi dari pemerintah Indonesia",
-      nib_image:
-        "https://placehold.co/400x300/dbeafe/1e3a8a?text=Surat+NIB+SIKOMJARU",
+      nib_carousel_items: [],
       hki_title: "Sertifikat HKI (Hak Kekayaan Intelektual)",
       hki_description: "Perlindungan hukum atas inovasi produk SIKOMJARU",
-      hki_image:
-        "https://placehold.co/400x300/ecfdf5/10b981?text=Sertifikat+HKI+SIKOMJARU",
+      hki_carousel_items: [],
     });
 
   const [penelitianSection, setPenelitianSection] = useState<PenelitianSection>(
@@ -323,6 +321,17 @@ export default function AdminPanel() {
     url: "",
     title: "",
     description: "",
+  });
+  const [isSertifikasiImageModalOpen, setIsSertifikasiImageModalOpen] =
+    useState(false);
+  const [isUploadingSertifikasiImage, setIsUploadingSertifikasiImage] =
+    useState(false);
+  const [sertifikasiImageForm, setSertifikasiImageForm] = useState({
+    type: "image" as "image" | "video",
+    url: "",
+    title: "",
+    description: "",
+    documentType: "nib" as "nib" | "hki", // Menentukan apakah untuk NIB atau HKI
   });
 
   // Helper function to get headers with auth token
@@ -1041,65 +1050,6 @@ export default function AdminPanel() {
     }
   };
 
-  // Upload Functions for Sertifikasi Images
-  const uploadNibImage = async (file: File) => {
-    try {
-      setIsUploading(true);
-      const result = await uploadImage(file, "sertifikasi");
-
-      if (result.success && result.url) {
-        setSertifikasiSection((prev) => ({
-          ...prev,
-          nib_image: result.url!,
-        }));
-        toast({
-          title: "Berhasil!",
-          description: "Foto NIB berhasil diupload",
-        });
-      } else {
-        throw new Error(result.error || "Upload failed");
-      }
-    } catch (error) {
-      console.error("Error uploading NIB image:", error);
-      toast({
-        title: "Error",
-        description: "Gagal mengupload foto NIB",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const uploadHkiImage = async (file: File) => {
-    try {
-      setIsUploading(true);
-      const result = await uploadImage(file, "sertifikasi");
-
-      if (result.success && result.url) {
-        setSertifikasiSection((prev) => ({
-          ...prev,
-          hki_image: result.url!,
-        }));
-        toast({
-          title: "Berhasil!",
-          description: "Foto HKI berhasil diupload",
-        });
-      } else {
-        throw new Error(result.error || "Upload failed");
-      }
-    } catch (error) {
-      console.error("Error uploading HKI image:", error);
-      toast({
-        title: "Error",
-        description: "Gagal mengupload foto HKI",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
   // Penelitian Section Functions
   const loadPenelitianData = async () => {
     try {
@@ -1614,6 +1564,171 @@ export default function AdminPanel() {
       ...prev,
       platforms: (prev.platforms || []).filter((_, i) => i !== index),
     }));
+  };
+
+  // Sertifikasi Section Helper Functions
+  const addSertifikasiCarouselItem = async (
+    type: "image" | "video",
+    documentType: "nib" | "hki"
+  ) => {
+    setSertifikasiImageForm({
+      type,
+      url: "",
+      title: "",
+      description: "",
+      documentType,
+    });
+    setIsSertifikasiImageModalOpen(true);
+  };
+
+  const saveSertifikasiCarouselItem = () => {
+    const urlValue =
+      typeof sertifikasiImageForm.url === "string"
+        ? sertifikasiImageForm.url
+        : "";
+    if (!urlValue.trim()) {
+      toast({
+        title: "Error",
+        description: "URL tidak boleh kosong",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    let finalUrl = urlValue;
+    if (sertifikasiImageForm.type === "video") {
+      const videoId = getYouTubeVideoId(urlValue);
+      if (videoId) {
+        finalUrl = videoId;
+      } else {
+        toast({
+          title: "Error",
+          description: "URL YouTube tidak valid",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    const newItem: MediaItem = {
+      type: sertifikasiImageForm.type,
+      url: finalUrl,
+      title: sertifikasiImageForm.title,
+      description: sertifikasiImageForm.description,
+    };
+
+    setSertifikasiSection((prev) => ({
+      ...prev,
+      [sertifikasiImageForm.documentType === "nib"
+        ? "nib_carousel_items"
+        : "hki_carousel_items"]: [
+        ...(prev[
+          sertifikasiImageForm.documentType === "nib"
+            ? "nib_carousel_items"
+            : "hki_carousel_items"
+        ] || []),
+        newItem,
+      ],
+    }));
+
+    setIsSertifikasiImageModalOpen(false);
+    setSertifikasiImageForm({
+      type: "image",
+      url: "",
+      title: "",
+      description: "",
+      documentType: "nib",
+    });
+  };
+
+  const uploadSertifikasiImageModal = async (file: File) => {
+    try {
+      setIsUploadingSertifikasiImage(true);
+      const result = await uploadImage(file, "sertifikasi");
+
+      if (result.success && result.url) {
+        setSertifikasiImageForm((prev) => ({
+          ...prev,
+          url: result.url || "",
+        }));
+        toast({
+          title: "Berhasil!",
+          description: "Gambar berhasil diupload",
+        });
+      } else {
+        throw new Error(result.error || "Gagal mengupload gambar");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Gagal mengupload gambar",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingSertifikasiImage(false);
+    }
+  };
+
+  const removeSertifikasiCarouselItem = (
+    index: number,
+    documentType: "nib" | "hki"
+  ) => {
+    setSertifikasiSection((prev) => ({
+      ...prev,
+      [documentType === "nib" ? "nib_carousel_items" : "hki_carousel_items"]: (
+        prev[
+          documentType === "nib" ? "nib_carousel_items" : "hki_carousel_items"
+        ] || []
+      ).filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateSertifikasiCarouselItem = (
+    index: number,
+    field: "title" | "description" | "url",
+    value: string,
+    documentType: "nib" | "hki"
+  ) => {
+    setSertifikasiSection((prev) => ({
+      ...prev,
+      [documentType === "nib" ? "nib_carousel_items" : "hki_carousel_items"]: (
+        prev[
+          documentType === "nib" ? "nib_carousel_items" : "hki_carousel_items"
+        ] || []
+      ).map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+    }));
+  };
+
+  const uploadSertifikasiImage = async (
+    file: File,
+    index: number,
+    documentType: "nib" | "hki"
+  ) => {
+    try {
+      setIsUploading(true);
+      const result = await uploadImage(file, "sertifikasi");
+
+      if (result.success && result.url) {
+        updateSertifikasiCarouselItem(index, "url", result.url, documentType);
+        toast({
+          title: "Berhasil!",
+          description: "Foto sertifikasi berhasil diupload",
+        });
+      } else {
+        throw new Error(result.error || "Upload failed");
+      }
+    } catch (error) {
+      console.error("Error uploading sertifikasi image:", error);
+      toast({
+        title: "Error",
+        description: "Gagal mengupload foto sertifikasi",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Review Section Helper Functions
@@ -3639,7 +3754,19 @@ export default function AdminPanel() {
                           {/* NIB Document */}
                           <Card>
                             <CardHeader>
-                              <CardTitle>Dokumen NIB</CardTitle>
+                              <CardTitle className="flex items-center justify-between">
+                                Dokumen NIB
+                                <Button
+                                  onClick={() =>
+                                    addSertifikasiCarouselItem("image", "nib")
+                                  }
+                                  variant="outline"
+                                  size="sm"
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  Tambah Gambar
+                                </Button>
+                              </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <div>
@@ -3671,73 +3798,106 @@ export default function AdminPanel() {
                                   rows={2}
                                 />
                               </div>
-                              <div>
-                                <Label>Foto NIB</Label>
-                                <div className="space-y-2">
-                                  {sertifikasiSection.nib_image && (
-                                    <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2">
-                                      <img
-                                        src={sertifikasiSection.nib_image}
-                                        alt="Preview NIB"
-                                        className="w-20 h-20 rounded-lg object-cover"
-                                      />
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() =>
-                                          setSertifikasiSection((prev) => ({
-                                            ...prev,
-                                            nib_image: "",
-                                          }))
-                                        }
-                                      >
-                                        Hapus
-                                      </Button>
-                                    </div>
-                                  )}
-                                  <div className="flex flex-col sm:flex-row gap-2">
-                                    <label className="cursor-pointer flex-1">
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        disabled={isUploading}
-                                        className="w-full"
-                                        asChild
-                                      >
-                                        <span>
-                                          <Upload className="w-4 h-4 mr-2" />
-                                          {isUploading
-                                            ? "Upload..."
-                                            : "Upload Foto NIB"}
-                                        </span>
-                                      </Button>
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                            uploadNibImage(file);
-                                            e.target.value = "";
+
+                              {/* NIB Carousel Items */}
+                              <div className="space-y-3">
+                                <Label>Gambar NIB</Label>
+                                {sertifikasiSection.nib_carousel_items?.map(
+                                  (item, index) => (
+                                    <Card key={index} className="p-3">
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <Badge variant="outline">
+                                            Gambar {index + 1}
+                                          </Badge>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() =>
+                                              removeSertifikasiCarouselItem(
+                                                index,
+                                                "nib"
+                                              )
+                                            }
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </Button>
+                                        </div>
+
+                                        {item.url && (
+                                          <img
+                                            src={item.url}
+                                            alt={`NIB ${index + 1}`}
+                                            className="w-full h-24 object-cover rounded-lg"
+                                          />
+                                        )}
+
+                                        <div className="flex gap-2">
+                                          <label className="cursor-pointer flex-1">
+                                            <Button
+                                              type="button"
+                                              size="sm"
+                                              variant="outline"
+                                              disabled={isUploading}
+                                              className="w-full"
+                                              asChild
+                                            >
+                                              <span>
+                                                <Upload className="w-4 h-4 mr-2" />
+                                                {isUploading
+                                                  ? "Upload..."
+                                                  : "Upload"}
+                                              </span>
+                                            </Button>
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              className="hidden"
+                                              onChange={(e) => {
+                                                const file =
+                                                  e.target.files?.[0];
+                                                if (file) {
+                                                  uploadSertifikasiImage(
+                                                    file,
+                                                    index,
+                                                    "nib"
+                                                  );
+                                                  e.target.value = "";
+                                                }
+                                              }}
+                                            />
+                                          </label>
+                                        </div>
+
+                                        <Input
+                                          value={item.url}
+                                          onChange={(e) =>
+                                            updateSertifikasiCarouselItem(
+                                              index,
+                                              "url",
+                                              e.target.value,
+                                              "nib"
+                                            )
                                           }
-                                        }}
-                                      />
-                                    </label>
-                                  </div>
-                                  <Input
-                                    value={sertifikasiSection.nib_image}
-                                    onChange={(e) =>
-                                      setSertifikasiSection((prev) => ({
-                                        ...prev,
-                                        nib_image: e.target.value,
-                                      }))
-                                    }
-                                    placeholder="Atau masukkan URL foto NIB"
-                                  />
-                                </div>
+                                          placeholder="Atau masukkan URL gambar"
+                                        />
+
+                                        <Input
+                                          value={item.title || ""}
+                                          onChange={(e) =>
+                                            updateSertifikasiCarouselItem(
+                                              index,
+                                              "title",
+                                              e.target.value,
+                                              "nib"
+                                            )
+                                          }
+                                          placeholder="Judul gambar (opsional)"
+                                        />
+                                      </div>
+                                    </Card>
+                                  )
+                                )}
                               </div>
                             </CardContent>
                           </Card>
@@ -3745,7 +3905,19 @@ export default function AdminPanel() {
                           {/* HKI Document */}
                           <Card>
                             <CardHeader>
-                              <CardTitle>Dokumen HKI</CardTitle>
+                              <CardTitle className="flex items-center justify-between">
+                                Dokumen HKI
+                                <Button
+                                  onClick={() =>
+                                    addSertifikasiCarouselItem("image", "hki")
+                                  }
+                                  variant="outline"
+                                  size="sm"
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  Tambah Gambar
+                                </Button>
+                              </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <div>
@@ -3777,73 +3949,106 @@ export default function AdminPanel() {
                                   rows={2}
                                 />
                               </div>
-                              <div>
-                                <Label>Foto HKI</Label>
-                                <div className="space-y-2">
-                                  {sertifikasiSection.hki_image && (
-                                    <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2">
-                                      <img
-                                        src={sertifikasiSection.hki_image}
-                                        alt="Preview HKI"
-                                        className="w-20 h-20 rounded-lg object-cover"
-                                      />
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() =>
-                                          setSertifikasiSection((prev) => ({
-                                            ...prev,
-                                            hki_image: "",
-                                          }))
-                                        }
-                                      >
-                                        Hapus
-                                      </Button>
-                                    </div>
-                                  )}
-                                  <div className="flex flex-col sm:flex-row gap-2">
-                                    <label className="cursor-pointer flex-1">
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        disabled={isUploading}
-                                        className="w-full"
-                                        asChild
-                                      >
-                                        <span>
-                                          <Upload className="w-4 h-4 mr-2" />
-                                          {isUploading
-                                            ? "Upload..."
-                                            : "Upload Foto HKI"}
-                                        </span>
-                                      </Button>
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                            uploadHkiImage(file);
-                                            e.target.value = "";
+
+                              {/* HKI Carousel Items */}
+                              <div className="space-y-3">
+                                <Label>Gambar HKI</Label>
+                                {sertifikasiSection.hki_carousel_items?.map(
+                                  (item, index) => (
+                                    <Card key={index} className="p-3">
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <Badge variant="outline">
+                                            Gambar {index + 1}
+                                          </Badge>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() =>
+                                              removeSertifikasiCarouselItem(
+                                                index,
+                                                "hki"
+                                              )
+                                            }
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </Button>
+                                        </div>
+
+                                        {item.url && (
+                                          <img
+                                            src={item.url}
+                                            alt={`HKI ${index + 1}`}
+                                            className="w-full h-24 object-cover rounded-lg"
+                                          />
+                                        )}
+
+                                        <div className="flex gap-2">
+                                          <label className="cursor-pointer flex-1">
+                                            <Button
+                                              type="button"
+                                              size="sm"
+                                              variant="outline"
+                                              disabled={isUploading}
+                                              className="w-full"
+                                              asChild
+                                            >
+                                              <span>
+                                                <Upload className="w-4 h-4 mr-2" />
+                                                {isUploading
+                                                  ? "Upload..."
+                                                  : "Upload"}
+                                              </span>
+                                            </Button>
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              className="hidden"
+                                              onChange={(e) => {
+                                                const file =
+                                                  e.target.files?.[0];
+                                                if (file) {
+                                                  uploadSertifikasiImage(
+                                                    file,
+                                                    index,
+                                                    "hki"
+                                                  );
+                                                  e.target.value = "";
+                                                }
+                                              }}
+                                            />
+                                          </label>
+                                        </div>
+
+                                        <Input
+                                          value={item.url}
+                                          onChange={(e) =>
+                                            updateSertifikasiCarouselItem(
+                                              index,
+                                              "url",
+                                              e.target.value,
+                                              "hki"
+                                            )
                                           }
-                                        }}
-                                      />
-                                    </label>
-                                  </div>
-                                  <Input
-                                    value={sertifikasiSection.hki_image}
-                                    onChange={(e) =>
-                                      setSertifikasiSection((prev) => ({
-                                        ...prev,
-                                        hki_image: e.target.value,
-                                      }))
-                                    }
-                                    placeholder="Atau masukkan URL foto HKI"
-                                  />
-                                </div>
+                                          placeholder="Atau masukkan URL gambar"
+                                        />
+
+                                        <Input
+                                          value={item.title || ""}
+                                          onChange={(e) =>
+                                            updateSertifikasiCarouselItem(
+                                              index,
+                                              "title",
+                                              e.target.value,
+                                              "hki"
+                                            )
+                                          }
+                                          placeholder="Judul gambar (opsional)"
+                                        />
+                                      </div>
+                                    </Card>
+                                  )
+                                )}
                               </div>
                             </CardContent>
                           </Card>
@@ -5812,6 +6017,143 @@ export default function AdminPanel() {
                               variant="outline"
                               onClick={() =>
                                 setIsPenelitianImageModalOpen(false)
+                              }
+                            >
+                              Batal
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Modal Tambah Gambar/Video Sertifikasi */}
+                    <Dialog
+                      open={isSertifikasiImageModalOpen}
+                      onOpenChange={setIsSertifikasiImageModalOpen}
+                    >
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>
+                            Tambah Gambar{" "}
+                            {sertifikasiImageForm.documentType === "nib"
+                              ? "NIB"
+                              : "HKI"}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div>
+                            <Label htmlFor="sertifikasi-url">URL Gambar</Label>
+                            <div className="space-y-2">
+                              {sertifikasiImageForm.url && (
+                                <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2">
+                                  <img
+                                    src={sertifikasiImageForm.url}
+                                    alt="Preview"
+                                    className="w-20 h-20 rounded-lg object-cover"
+                                  />
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      setSertifikasiImageForm((prev) => ({
+                                        ...prev,
+                                        url: "",
+                                      }))
+                                    }
+                                  >
+                                    Hapus
+                                  </Button>
+                                </div>
+                              )}
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <label className="cursor-pointer flex-1">
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={isUploadingSertifikasiImage}
+                                    className="w-full"
+                                    asChild
+                                  >
+                                    <span>
+                                      <Upload className="w-4 h-4 mr-2" />
+                                      {isUploadingSertifikasiImage
+                                        ? "Upload..."
+                                        : "Upload Foto"}
+                                    </span>
+                                  </Button>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        uploadSertifikasiImageModal(file);
+                                        e.target.value = "";
+                                      }
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                              <Input
+                                id="sertifikasi-url"
+                                value={sertifikasiImageForm.url}
+                                onChange={(e) =>
+                                  setSertifikasiImageForm((prev) => ({
+                                    ...prev,
+                                    url: e.target.value,
+                                  }))
+                                }
+                                placeholder="Atau masukkan URL gambar"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="sertifikasi-title">
+                              Judul (Opsional)
+                            </Label>
+                            <Input
+                              id="sertifikasi-title"
+                              value={sertifikasiImageForm.title}
+                              onChange={(e) =>
+                                setSertifikasiImageForm((prev) => ({
+                                  ...prev,
+                                  title: e.target.value,
+                                }))
+                              }
+                              placeholder="Masukkan judul"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="sertifikasi-description">
+                              Deskripsi (Opsional)
+                            </Label>
+                            <Textarea
+                              id="sertifikasi-description"
+                              value={sertifikasiImageForm.description}
+                              onChange={(e) =>
+                                setSertifikasiImageForm((prev) => ({
+                                  ...prev,
+                                  description: e.target.value,
+                                }))
+                              }
+                              placeholder="Masukkan deskripsi"
+                              rows={3}
+                            />
+                          </div>
+                          <div className="flex gap-2 pt-4">
+                            <Button
+                              onClick={saveSertifikasiCarouselItem}
+                              className="flex-1"
+                            >
+                              Tambah Gambar
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() =>
+                                setIsSertifikasiImageModalOpen(false)
                               }
                             >
                               Batal
