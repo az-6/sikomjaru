@@ -33,20 +33,27 @@ export default function LoginPage() {
     setError("");
 
     try {
+      console.log("Attempting login...");
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log("Login response:", { data, error });
+
       if (error) {
+        console.error("Login error:", error);
         setError(error.message);
+        setLoading(false);
       } else if (data.user) {
+        console.log("Login successful, redirecting to admin...");
         // Successful login
         router.push("/admin");
+        setLoading(false);
       }
     } catch (err) {
+      console.error("Login exception:", err);
       setError("Terjadi kesalahan saat login. Silakan coba lagi.");
-    } finally {
       setLoading(false);
     }
   };
