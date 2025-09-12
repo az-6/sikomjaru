@@ -92,6 +92,15 @@ export default function LoginPage() {
               </Alert>
             )}
 
+            {loading && (
+              <Alert>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <AlertDescription>
+                  Sedang memproses login, mohon tunggu...
+                </AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -136,13 +145,13 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-teal-600 hover:bg-teal-700"
+                className="w-full h-11 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Memuat...
+                    Sedang masuk...
                   </>
                 ) : (
                   "Masuk"
