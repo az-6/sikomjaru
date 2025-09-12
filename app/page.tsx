@@ -19,7 +19,7 @@ import PenelitianSection from "@/components/sections/PenelitianSection";
 import BelanjaSection from "@/components/sections/BelanjaSection";
 import ReviewSection from "@/components/sections/ReviewSection";
 import FooterSection from "@/components/sections/FooterSection";
-import MainHeader from "@/components/MainHeader";
+import Header from "@/components/header";
 import {
   Heart,
   Users,
@@ -164,8 +164,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
-      {/* Main Header */}
-      <MainHeader />
+      {/* Header */}
+      <Header />
 
       <main className="pt-14 sm:pt-16 lg:pt-20">
         {/* Section Home - Dynamic dari CMS */}

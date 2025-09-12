@@ -3,10 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, Settings, Eye } from "lucide-react";
+import { Menu, X, Home, Settings, Eye, LogOut, User } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 export default function AdminHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -42,6 +49,25 @@ export default function AdminHeader() {
               <Settings className="w-4 h-4" />
               <span>CMS Dashboard</span>
             </Link>
+
+            {/* User Info */}
+            <div className="flex items-center space-x-3 pl-4 border-l border-gray-300">
+              <div className="flex items-center space-x-2">
+                <User className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-700">
+                  {user?.email?.split("@")[0] || "Admin"}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                className="flex items-center space-x-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </Button>
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -81,6 +107,23 @@ export default function AdminHeader() {
                 <Settings className="w-4 h-4" />
                 <span>CMS Dashboard</span>
               </Link>
+
+              {/* User Info Mobile */}
+              <div className="pt-4 border-t border-gray-200 mt-4">
+                <div className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700">
+                  <User className="w-4 h-4" />
+                  <span>{user?.email?.split("@")[0] || "Admin"}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2 mx-3 mt-2 w-auto"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </Button>
+              </div>
             </nav>
           </div>
         )}

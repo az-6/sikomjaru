@@ -1,9 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// For client-side usage
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+
+// Legacy client for backward compatibility
+export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 // Types for CMS data
 export interface HomeSection {

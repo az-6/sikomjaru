@@ -100,22 +100,25 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button di kanan */}
-          <button
-            className={`p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-all duration-500 z-10 flex-shrink-0 ${
-              isScrolled
-                ? "opacity-0 scale-90 pointer-events-none"
-                : "opacity-100 scale-100"
-            }`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
-            ) : (
-              <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
-            )}
-          </button>
+          {/* Right side - Mobile Menu Only */}
+          <div className="flex items-center z-10 flex-shrink-0">
+            {/* Mobile Menu Button */}
+            <button
+              className={`p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-all duration-500 ${
+                isScrolled
+                  ? "opacity-0 scale-90 pointer-events-none"
+                  : "opacity-100 scale-100"
+              }`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? (
+                <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+              ) : (
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -165,7 +168,15 @@ export default function Header() {
                 >
                   Kontak
                 </a>
-                <div className="pt-3 sm:pt-4 border-t border-gray-200">
+                <div className="pt-3 sm:pt-4 border-t border-gray-200 space-y-2 sm:space-y-3">
+                  <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
+                    <Button
+                      variant="outline"
+                      className="w-full py-2.5 sm:py-3 text-sm sm:text-lg border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white"
+                    >
+                      Admin Login
+                    </Button>
+                  </Link>
                   <Button className="bg-orange-500 hover:bg-orange-600 text-white w-full py-2.5 sm:py-3 text-sm sm:text-lg">
                     <a href="#belanja" onClick={() => setIsMenuOpen(false)}>
                       Beli Sekarang
