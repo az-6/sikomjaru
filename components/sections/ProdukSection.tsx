@@ -119,8 +119,9 @@ export default function ProdukSection() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12 lg:mb-16">
-            <div className="relative order-2 lg:order-1">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12 lg:mb-16">
+            {/* Carousel: order-1 on mobile, order-1 on desktop */}
+            <div className="relative order-1 lg:order-1 w-full">
               {/* Product Features Carousel */}
               <div className="relative rounded-2xl shadow-lg overflow-hidden bg-white max-w-md mx-auto lg:max-w-none">
                 <Carousel
@@ -192,7 +193,8 @@ export default function ProdukSection() {
                 </Carousel>
               </div>
             </div>
-            <div className="space-y-6 lg:space-y-8 order-1 lg:order-2">
+            {/* Benefits: order-2 on mobile, order-2 on desktop */}
+            <div className="space-y-6 lg:space-y-8 order-2 lg:order-2 w-full">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
                 {produkSection.benefits_title}
               </h3>

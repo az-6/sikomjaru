@@ -151,45 +151,42 @@ export default function HomeSection() {
         {/* Content with relative positioning */}
         <div className="relative z-10">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-              <div className="space-y-6 lg:space-y-8 order-2 lg:order-1">
-                <div className="space-y-4">
-                  {/* Logo Partners */}
-                  {logoPartners.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 justify-center lg:justify-start mb-4">
-                      {logoPartners.map((logo, index) => (
-                        <div
-                          key={index}
-                          className="relative group flex-shrink-0"
-                        >
-                          <ClickableImage
-                            src={logo.src}
-                            alt={logo.alt}
-                            className="h-6 sm:h-8 md:h-10 lg:h-12 w-auto object-contain hover:opacity-80 transition-opacity duration-300 max-w-[60px] sm:max-w-[80px]"
-                            onClick={() => setSelectedImage(logo.src)}
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
-                          {/* Tooltip */}
-                          <div className="hidden sm:block absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50">
-                            {logo.name}
-                          </div>
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              {/* Mobile-first: Logo Partners, then Text, then Carousel */}
+              <div className="flex flex-col order-1 lg:order-1 w-full">
+                {/* Logo Partners */}
+                {logoPartners.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 justify-center lg:justify-start mb-4">
+                    {logoPartners.map((logo, index) => (
+                      <div key={index} className="relative group flex-shrink-0">
+                        <ClickableImage
+                          src={logo.src}
+                          alt={logo.alt}
+                          className="h-6 sm:h-8 md:h-10 lg:h-12 w-auto object-contain hover:opacity-80 transition-opacity duration-300 max-w-[60px] sm:max-w-[80px]"
+                          onClick={() => setSelectedImage(logo.src)}
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                        {/* Tooltip */}
+                        <div className="hidden sm:block absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50">
+                          {logo.name}
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-                    {homeSection.title}
-                  </h1>
-                  <p className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed">
-                    {homeSection.subtitle}
-                  </p>
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/* Text */}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
+                  {homeSection.title}
+                </h1>
+                <p className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed">
+                  {homeSection.subtitle}
+                </p>
               </div>
 
-              <div className="relative order-1 lg:order-2">
+              {/* Carousel: order-2 on mobile, order-2 on desktop */}
+              <div className="relative order-2 lg:order-2 w-full">
                 {/* Instagram-style Media Carousel */}
                 <div className="relative rounded-2xl shadow-2xl overflow-hidden bg-white max-w-md mx-auto lg:max-w-none">
                   <Carousel
