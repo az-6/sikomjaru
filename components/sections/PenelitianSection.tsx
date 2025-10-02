@@ -114,9 +114,32 @@ export default function PenelitianSection() {
                           <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
                             {item.title}
                           </h4>
-                          <p className="text-xs sm:text-sm text-gray-600">
+                          <p className="text-xs sm:text-sm text-gray-600 mb-2">
                             {item.description}
                           </p>
+                          {item.link && item.link.trim() !== "" && (
+                            <a
+                              href={item.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium inline-flex items-center gap-1"
+                            >
+                              Lihat Detail
+                              <svg
+                                className="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </a>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

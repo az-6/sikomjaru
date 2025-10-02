@@ -14,15 +14,19 @@ interface Platform {
   icon: string;
 }
 
+interface Product {
+  product_name: string;
+  product_description: string;
+  product_price: string;
+  carousel_items: MediaItem[];
+}
+
 interface BelanjaSection {
   id?: string;
   title: string;
   subtitle: string;
-  product_name: string;
-  product_description: string;
-  product_price: string;
+  products: Product[];
   platforms_title: string;
-  carousel_items: MediaItem[];
   platforms: Platform[];
 }
 

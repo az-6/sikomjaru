@@ -9,11 +9,8 @@ CREATE TABLE belanja_sections (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL DEFAULT 'Belanja Produk SIKOMJARU',
   subtitle TEXT NOT NULL DEFAULT 'Dapatkan alat peraga RJP inovatif kami dengan mudah melalui berbagai platform marketplace terpercaya di Indonesia.',
-  product_name TEXT NOT NULL DEFAULT 'SIKOMJARU - Phantom Edukasi Kompresi Jantung Paru',
-  product_description TEXT NOT NULL DEFAULT 'Alat peraga RJP inovatif dengan fitur lengkap: indikator lampu, panduan suara, dan layar LCD.',
-  product_price TEXT NOT NULL DEFAULT 'Rp 660.000',
+  products JSONB DEFAULT '[]'::jsonb,
   platforms_title TEXT NOT NULL DEFAULT 'Tersedia di:',
-  carousel_items JSONB DEFAULT '[]'::jsonb,
   platforms JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -26,44 +23,62 @@ DELETE FROM belanja_sections;
 INSERT INTO belanja_sections (
   title,
   subtitle,
-  product_name,
-  product_description,
-  product_price,
   platforms_title,
-  carousel_items,
+  products,
   platforms
 ) VALUES (
   'Belanja Produk SIKOMJARU',
   'Dapatkan alat peraga RJP inovatif kami dengan mudah melalui berbagai platform marketplace terpercaya di Indonesia.',
-  'SIKOMJARU - Phantom Edukasi Kompresi Jantung Paru',
-  'Alat peraga RJP inovatif dengan fitur lengkap: indikator lampu, panduan suara, dan layar LCD.',
-  'Rp 660.000',
   'Tersedia di:',
   '[
     {
-      "type": "image",
-      "url": "https://placehold.co/600x600/dbeafe/1e3a8a?text=SIKOMJARU+Produk+Utama",
-      "title": "Produk SIKOMJARU Tampak Utama"
+      "product_name": "SIKOMJARU - Phantom Edukasi Kompresi Jantung Paru",
+      "product_description": "Alat peraga RJP inovatif dengan fitur lengkap: indikator lampu, panduan suara, dan layar LCD.",
+      "product_price": "Rp 660.000",
+      "carousel_items": [
+        {
+          "type": "image",
+          "url": "https://placehold.co/600x600/dbeafe/1e3a8a?text=SIKOMJARU+Produk+Utama",
+          "title": "Produk SIKOMJARU Tampak Utama"
+        },
+        {
+          "type": "image", 
+          "url": "https://placehold.co/600x600/e0f2fe/0ea5e9?text=SIKOMJARU+Tampak+Samping",
+          "title": "Produk SIKOMJARU Tampak Samping"
+        },
+        {
+          "type": "image",
+          "url": "https://placehold.co/600x600/d1fae5/34d399?text=Fitur+LCD+SIKOMJARU", 
+          "title": "Fitur LCD Digital SIKOMJARU"
+        },
+        {
+          "type": "image",
+          "url": "https://placehold.co/600x600/fef3c7/d97706?text=Detail+Komponen+SIKOMJARU",
+          "title": "Detail Komponen SIKOMJARU"
+        },
+        {
+          "type": "image",
+          "url": "https://placehold.co/600x600/ecfdf5/10b981?text=Motif+Batik+Banyumasan",
+          "title": "Motif Batik Banyumasan SIKOMJARU"
+        }
+      ]
     },
     {
-      "type": "image", 
-      "url": "https://placehold.co/600x600/e0f2fe/0ea5e9?text=SIKOMJARU+Tampak+Samping",
-      "title": "Produk SIKOMJARU Tampak Samping"
-    },
-    {
-      "type": "image",
-      "url": "https://placehold.co/600x600/d1fae5/34d399?text=Fitur+LCD+SIKOMJARU", 
-      "title": "Fitur LCD Digital SIKOMJARU"
-    },
-    {
-      "type": "image",
-      "url": "https://placehold.co/600x600/fef3c7/d97706?text=Detail+Komponen+SIKOMJARU",
-      "title": "Detail Komponen SIKOMJARU"
-    },
-    {
-      "type": "image",
-      "url": "https://placehold.co/600x600/ecfdf5/10b981?text=Motif+Batik+Banyumasan",
-      "title": "Motif Batik Banyumasan SIKOMJARU"
+      "product_name": "SIKOMJARU Pro - Versi Advanced",
+      "product_description": "Versi lanjutan dengan sensor tekanan real-time, bluetooth connectivity, dan aplikasi monitoring.",
+      "product_price": "Rp 890.000",
+      "carousel_items": [
+        {
+          "type": "image",
+          "url": "https://placehold.co/600x600/fef3c7/d97706?text=SIKOMJARU+Pro",
+          "title": "SIKOMJARU Pro Advanced"
+        },
+        {
+          "type": "image",
+          "url": "https://placehold.co/600x600/dbeafe/1e3a8a?text=Sensor+Advanced",
+          "title": "Sensor Tekanan Real-time"
+        }
+      ]
     }
   ]',
   '[

@@ -18,15 +18,19 @@ interface Platform {
   icon: string;
 }
 
+interface Product {
+  product_name: string;
+  product_description: string;
+  product_price: string;
+  carousel_items: MediaItem[];
+}
+
 interface BelanjaSection {
   id?: string;
   title: string;
   subtitle: string;
-  product_name: string;
-  product_description: string;
-  product_price: string;
+  products: Product[];
   platforms_title: string;
-  carousel_items: MediaItem[];
   platforms: Platform[];
 }
 
@@ -50,12 +54,8 @@ export async function GET() {
         title: "Belanja Produk SIKOMJARU",
         subtitle:
           "Dapatkan alat peraga RJP inovatif kami dengan mudah melalui berbagai platform marketplace terpercaya di Indonesia.",
-        product_name: "SIKOMJARU - Phantom Edukasi Kompresi Jantung Paru",
-        product_description:
-          "Alat peraga RJP inovatif dengan fitur lengkap: indikator lampu, panduan suara, dan layar LCD.",
-        product_price: "Rp 660.000",
+        products: [],
         platforms_title: "Tersedia di:",
-        carousel_items: [],
         platforms: [],
       };
       return NextResponse.json(defaultData);
@@ -64,9 +64,7 @@ export async function GET() {
     // Parse JSONB fields
     const parsedData: BelanjaSection = {
       ...data,
-      carousel_items: Array.isArray(data.carousel_items)
-        ? data.carousel_items
-        : [],
+      products: Array.isArray(data.products) ? data.products : [],
       platforms: Array.isArray(data.platforms) ? data.platforms : [],
     };
 
@@ -89,21 +87,13 @@ export async function PUT(request: NextRequest) {
     }
     const supabase = getSupabaseAuthClient(accessToken);
     const body = await request.json();
-    const {
-      title,
-      subtitle,
-      product_name,
-      product_description,
-      product_price,
-      platforms_title,
-      carousel_items,
-      platforms,
-    } = body as BelanjaSection;
+    const { title, subtitle, products, platforms_title, platforms } =
+      body as BelanjaSection;
 
     // Validate required fields
-    if (!title || !subtitle || !product_name) {
+    if (!title || !subtitle) {
       return NextResponse.json(
-        { error: "Title, subtitle, and product name are required" },
+        { error: "Title and subtitle are required" },
         { status: 400 }
       );
     }
@@ -124,11 +114,8 @@ export async function PUT(request: NextRequest) {
         .update({
           title,
           subtitle,
-          product_name,
-          product_description,
-          product_price,
+          products: products || [],
           platforms_title,
-          carousel_items: carousel_items || [],
           platforms: platforms || [],
           updated_at: new Date().toISOString(),
         })
@@ -148,11 +135,8 @@ export async function PUT(request: NextRequest) {
         .insert({
           title,
           subtitle,
-          product_name,
-          product_description,
-          product_price,
+          products: products || [],
           platforms_title,
-          carousel_items: carousel_items || [],
           platforms: platforms || [],
         })
         .select()

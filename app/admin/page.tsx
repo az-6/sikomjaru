@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { uploadImage, deleteImage } from "@/lib/imageUpload";
 import AdminHeader from "@/components/AdminHeader";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -58,6 +58,7 @@ interface MediaItem {
   url: string;
   title?: string;
   description?: string;
+  link?: string;
 }
 
 interface Platform {
@@ -147,15 +148,19 @@ interface PenelitianSection {
   carousel_items: MediaItem[];
 }
 
+interface Product {
+  product_name: string;
+  product_description: string;
+  product_price: string;
+  carousel_items: MediaItem[];
+}
+
 interface BelanjaSection {
   id?: string;
   title: string;
   subtitle: string;
-  product_name: string;
-  product_description: string;
-  product_price: string;
+  products: Product[];
   platforms_title: string;
-  carousel_items: MediaItem[];
   platforms: Platform[];
 }
 
@@ -274,12 +279,8 @@ export default function AdminPanel() {
     title: "Belanja Produk SIKOMJARU",
     subtitle:
       "Dapatkan alat peraga RJP inovatif kami dengan mudah melalui berbagai platform marketplace terpercaya di Indonesia.",
-    product_name: "SIKOMJARU - Phantom Edukasi Kompresi Jantung Paru",
-    product_description:
-      "Alat peraga RJP inovatif dengan fitur lengkap: indikator lampu, panduan suara, dan layar LCD.",
-    product_price: "Rp 660.000",
+    products: [],
     platforms_title: "Tersedia di:",
-    carousel_items: [],
     platforms: [],
   });
 
@@ -321,6 +322,7 @@ export default function AdminPanel() {
     url: "",
     title: "",
     description: "",
+    link: "",
   });
   const [isSertifikasiImageModalOpen, setIsSertifikasiImageModalOpen] =
     useState(false);
@@ -1132,19 +1134,24 @@ export default function AdminPanel() {
         body: JSON.stringify(belanjaSection),
       });
 
+      const responseData = await response.json();
+
       if (response.ok) {
         toast({
           title: "Berhasil!",
           description: "Data section Belanja telah disimpan",
         });
       } else {
-        throw new Error("Failed to save");
+        throw new Error(responseData.error || "Failed to save");
       }
     } catch (error) {
       console.error("Error saving belanja data:", error);
       toast({
         title: "Error",
-        description: "Gagal menyimpan data belanja",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Gagal menyimpan data belanja",
         variant: "destructive",
       });
     } finally {
@@ -1282,6 +1289,7 @@ export default function AdminPanel() {
       url: "",
       title: "",
       description: "",
+      link: "",
     });
     setIsPenelitianImageModalOpen(true);
   };
@@ -1320,6 +1328,7 @@ export default function AdminPanel() {
       url: finalUrl,
       title: penelitianImageForm.title,
       description: penelitianImageForm.description,
+      link: penelitianImageForm.link,
     };
 
     setPenelitianSection((prev) => ({
@@ -1333,6 +1342,7 @@ export default function AdminPanel() {
       url: "",
       title: "",
       description: "",
+      link: "",
     });
   };
 
@@ -1413,95 +1423,87 @@ export default function AdminPanel() {
   };
 
   // Belanja Section Helper Functions
-  const addBelanjaCarouselItem = async (type: "image" | "video") => {
+  const addProduct = () => {
+    const newProduct: Product = {
+      product_name: "Produk Baru",
+      product_description: "Deskripsi produk",
+      product_price: "Rp 0",
+      carousel_items: [],
+    };
+    setBelanjaSection((prev) => ({
+      ...prev,
+      products: [...(prev.products || []), newProduct],
+    }));
+  };
+
+  const removeProduct = (productIndex: number) => {
+    setBelanjaSection((prev) => ({
+      ...prev,
+      products: (prev.products || []).filter((_, i) => i !== productIndex),
+    }));
+  };
+
+  const updateProduct = (
+    productIndex: number,
+    field: keyof Product,
+    value: any
+  ) => {
+    setBelanjaSection((prev) => {
+      const updatedProducts = [...(prev.products || [])];
+      updatedProducts[productIndex] = {
+        ...updatedProducts[productIndex],
+        [field]: value,
+      };
+      return {
+        ...prev,
+        products: updatedProducts,
+      };
+    });
+  };
+
+  const addBelanjaCarouselItem = async (
+    productIndex: number,
+    type: "image" | "video"
+  ) => {
     if (type === "image") {
       setIsBelanjaImageModalOpen(true);
+      // Store which product we're adding to
+      (window as any).__currentProductIndex = productIndex;
     }
   };
 
-  const saveBelanjaImage = async () => {
-    if (newBelanjaImage.file) {
-      try {
-        let imageUrl = newBelanjaImage.previewUrl;
-
-        // If previewUrl is a blob URL, we need to upload the file
-        if (imageUrl.startsWith("blob:")) {
-          setIsUploading(true);
-          const result = await uploadImage(newBelanjaImage.file, "belanja");
-
-          if (result.success && result.url) {
-            imageUrl = result.url;
-          } else {
-            alert("Upload gagal: " + (result.error || "Unknown error"));
-            return;
-          }
-        }
-
-        const newItem: MediaItem = {
-          type: "image",
-          url: imageUrl,
-          title: newBelanjaImage.title.trim(),
-        };
-
-        setBelanjaSection((prev) => ({
-          ...prev,
-          carousel_items: [...(prev.carousel_items || []), newItem],
-        }));
-
-        // Clean up and close modal
-        if (newBelanjaImage.previewUrl.startsWith("blob:")) {
-          URL.revokeObjectURL(newBelanjaImage.previewUrl);
-        }
-        setNewBelanjaImage({ file: null, title: "", previewUrl: "" });
-        setIsBelanjaImageModalOpen(false);
-
-        toast({
-          title: "Berhasil!",
-          description: "Gambar produk berhasil ditambahkan",
-        });
-      } catch (error) {
-        console.error("Upload error:", error);
-        alert("Upload gagal!");
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  };
-
-  const handleBelanjaImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setNewBelanjaImage((prev) => ({
-        ...prev,
-        file: file,
-        previewUrl: previewUrl,
-      }));
-    }
-  };
-
-  const closeBelanjaImageModal = () => {
-    // Clean up preview URL to prevent memory leaks
-    if (newBelanjaImage.previewUrl) {
-      URL.revokeObjectURL(newBelanjaImage.previewUrl);
-    }
-    setNewBelanjaImage({ file: null, title: "", previewUrl: "" });
-    setIsBelanjaImageModalOpen(false);
-  };
-
-  const uploadBelanjaImage = async (file: File) => {
+  const uploadBelanjaImage = async (file: File, productIndex: number) => {
     try {
       setIsUploading(true);
       const result = await uploadImage(file, "belanja");
 
       if (result.success && result.url) {
-        // Set the uploaded file info and open modal for title input
-        setNewBelanjaImage({
-          file: file,
-          title: "",
-          previewUrl: result.url,
+        const title = prompt("Masukkan judul gambar (opsional):") || "";
+        const newItem: MediaItem = {
+          type: "image",
+          url: result.url,
+          title: title,
+        };
+
+        setBelanjaSection((prev) => {
+          const updatedProducts = [...(prev.products || [])];
+          updatedProducts[productIndex] = {
+            ...updatedProducts[productIndex],
+            carousel_items: [
+              ...(updatedProducts[productIndex].carousel_items || []),
+              newItem,
+            ],
+          };
+          return {
+            ...prev,
+            products: updatedProducts,
+          };
         });
-        setIsBelanjaImageModalOpen(true);
+
+        toast({
+          title: "Berhasil!",
+          description: "Gambar produk berhasil ditambahkan",
+        });
       } else {
         throw new Error(result.error || "Upload failed");
       }
@@ -1517,8 +1519,12 @@ export default function AdminPanel() {
     }
   };
 
-  const removeBelanjaCarouselItem = async (index: number) => {
-    const item = belanjaSection.carousel_items[index];
+  const removeBelanjaCarouselItem = async (
+    productIndex: number,
+    itemIndex: number
+  ) => {
+    const item =
+      belanjaSection.products[productIndex].carousel_items[itemIndex];
     if (item.type === "image" && item.url.includes("supabase")) {
       try {
         await deleteImage(item.url);
@@ -1527,10 +1533,19 @@ export default function AdminPanel() {
       }
     }
 
-    setBelanjaSection((prev) => ({
-      ...prev,
-      carousel_items: (prev.carousel_items || []).filter((_, i) => i !== index),
-    }));
+    setBelanjaSection((prev) => {
+      const updatedProducts = [...(prev.products || [])];
+      updatedProducts[productIndex] = {
+        ...updatedProducts[productIndex],
+        carousel_items: updatedProducts[productIndex].carousel_items.filter(
+          (_, i) => i !== itemIndex
+        ),
+      };
+      return {
+        ...prev,
+        products: updatedProducts,
+      };
+    });
   };
 
   const addPlatform = () => {
@@ -4368,208 +4383,219 @@ export default function AdminPanel() {
                           </CardContent>
                         </Card>
 
+                        {/* Products Section */}
                         <Card>
                           <CardHeader>
-                            <CardTitle>Informasi Produk</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div>
-                              <Label htmlFor="product-name">Nama Produk</Label>
-                              <Input
-                                id="product-name"
-                                value={belanjaSection.product_name}
-                                onChange={(e) =>
-                                  setBelanjaSection((prev) => ({
-                                    ...prev,
-                                    product_name: e.target.value,
-                                  }))
-                                }
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="product-description">
-                                Deskripsi Produk
-                              </Label>
-                              <Textarea
-                                id="product-description"
-                                value={belanjaSection.product_description}
-                                onChange={(e) =>
-                                  setBelanjaSection((prev) => ({
-                                    ...prev,
-                                    product_description: e.target.value,
-                                  }))
-                                }
-                                rows={3}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="product-price">
-                                Harga Produk
-                              </Label>
-                              <Input
-                                id="product-price"
-                                value={belanjaSection.product_price}
-                                onChange={(e) =>
-                                  setBelanjaSection((prev) => ({
-                                    ...prev,
-                                    product_price: e.target.value,
-                                  }))
-                                }
-                                placeholder="Rp 660.000"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="platforms-title">
-                                Judul Platform
-                              </Label>
-                              <Input
-                                id="platforms-title"
-                                value={belanjaSection.platforms_title}
-                                onChange={(e) =>
-                                  setBelanjaSection((prev) => ({
-                                    ...prev,
-                                    platforms_title: e.target.value,
-                                  }))
-                                }
-                                placeholder="Tersedia di:"
-                              />
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Carousel Produk</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="flex flex-wrap gap-2">
-                              <Button
-                                onClick={() => addBelanjaCarouselItem("image")}
-                                variant="outline"
-                                size="sm"
-                                className="text-xs"
-                              >
-                                <Plus className="w-3 h-3 mr-1" />
-                                URL Gambar
+                            <div className="flex items-center justify-between">
+                              <CardTitle>Produk-Produk</CardTitle>
+                              <Button onClick={addProduct} size="sm">
+                                <Plus className="w-4 h-4 mr-2" />
+                                Tambah Produk
                               </Button>
-                              <label className="cursor-pointer">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  disabled={isUploading}
-                                  asChild
-                                  className="text-xs"
-                                >
-                                  <span>
-                                    <Upload className="w-3 h-3 mr-1" />
-                                    {isUploading ? "Upload..." : "Upload"}
-                                  </span>
-                                </Button>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      uploadBelanjaImage(file);
-                                      e.target.value = "";
-                                    }
-                                  }}
-                                />
-                              </label>
                             </div>
-
-                            <div className="space-y-4">
-                              {belanjaSection.carousel_items.map(
-                                (item, index) => (
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {belanjaSection.products &&
+                            belanjaSection.products.length > 0 ? (
+                              belanjaSection.products.map(
+                                (product, productIndex) => (
                                   <Card
-                                    key={index}
-                                    className="border border-gray-200"
+                                    key={productIndex}
+                                    className="border-2 border-blue-200"
                                   >
-                                    <CardHeader className="pb-3">
+                                    <CardHeader>
                                       <div className="flex items-center justify-between">
-                                        <span className="font-medium text-sm">
-                                          Gambar {index + 1}
-                                        </span>
+                                        <h3 className="font-semibold">
+                                          Produk {productIndex + 1}
+                                        </h3>
                                         <Button
                                           onClick={() =>
-                                            removeBelanjaCarouselItem(index)
+                                            removeProduct(productIndex)
                                           }
                                           variant="destructive"
                                           size="sm"
-                                          className="h-8 w-8 p-0"
                                         >
-                                          <Trash2 className="w-3 h-3" />
+                                          <Trash2 className="w-4 h-4 mr-2" />
+                                          Hapus Produk
                                         </Button>
                                       </div>
                                     </CardHeader>
-                                    <CardContent className="space-y-3">
-                                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                                        <div className="md:col-span-1">
-                                          {item.url && (
-                                            <img
-                                              src={item.url}
-                                              alt={item.title || "Preview"}
-                                              className="w-full h-20 object-cover rounded-lg border"
+                                    <CardContent className="space-y-4">
+                                      <div>
+                                        <Label>Nama Produk</Label>
+                                        <Input
+                                          value={product.product_name}
+                                          onChange={(e) =>
+                                            updateProduct(
+                                              productIndex,
+                                              "product_name",
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder="Nama produk"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Deskripsi Produk</Label>
+                                        <Textarea
+                                          value={product.product_description}
+                                          onChange={(e) =>
+                                            updateProduct(
+                                              productIndex,
+                                              "product_description",
+                                              e.target.value
+                                            )
+                                          }
+                                          rows={3}
+                                          placeholder="Deskripsi produk"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Harga Produk</Label>
+                                        <Input
+                                          value={product.product_price}
+                                          onChange={(e) =>
+                                            updateProduct(
+                                              productIndex,
+                                              "product_price",
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder="Rp 660.000"
+                                        />
+                                      </div>
+
+                                      {/* Carousel for this product */}
+                                      <div className="border-t pt-4 mt-4">
+                                        <div className="flex items-center justify-between mb-3">
+                                          <Label>Gambar Produk</Label>
+                                          <label className="cursor-pointer">
+                                            <Button
+                                              type="button"
+                                              variant="outline"
+                                              size="sm"
+                                              disabled={isUploading}
+                                              asChild
+                                            >
+                                              <span>
+                                                <Upload className="w-3 h-3 mr-1" />
+                                                {isUploading
+                                                  ? "Upload..."
+                                                  : "Upload Gambar"}
+                                              </span>
+                                            </Button>
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              className="hidden"
+                                              onChange={(e) => {
+                                                const file =
+                                                  e.target.files?.[0];
+                                                if (file) {
+                                                  uploadBelanjaImage(
+                                                    file,
+                                                    productIndex
+                                                  );
+                                                  e.target.value = "";
+                                                }
+                                              }}
                                             />
-                                          )}
+                                          </label>
                                         </div>
-                                        <div className="md:col-span-3 space-y-3">
-                                          <div>
-                                            <Label className="text-xs text-gray-600">
-                                              Judul Gambar
-                                            </Label>
-                                            <Input
-                                              value={item.title || ""}
-                                              onChange={(e) => {
-                                                const updatedItems = [
-                                                  ...belanjaSection.carousel_items,
-                                                ];
-                                                updatedItems[index] = {
-                                                  ...item,
-                                                  title: e.target.value,
-                                                };
-                                                setBelanjaSection((prev) => ({
-                                                  ...prev,
-                                                  carousel_items: updatedItems,
-                                                }));
-                                              }}
-                                              placeholder="Judul gambar produk"
-                                              className="text-sm"
-                                            />
-                                          </div>
-                                          <div>
-                                            <Label className="text-xs text-gray-600">
-                                              URL Gambar
-                                            </Label>
-                                            <Input
-                                              value={item.url}
-                                              onChange={(e) => {
-                                                const updatedItems = [
-                                                  ...belanjaSection.carousel_items,
-                                                ];
-                                                updatedItems[index] = {
-                                                  ...item,
-                                                  url: e.target.value,
-                                                };
-                                                setBelanjaSection((prev) => ({
-                                                  ...prev,
-                                                  carousel_items: updatedItems,
-                                                }));
-                                              }}
-                                              placeholder="https://..."
-                                              className="text-sm"
-                                            />
-                                          </div>
+
+                                        <div className="space-y-3">
+                                          {product.carousel_items.map(
+                                            (item, itemIndex) => (
+                                              <Card
+                                                key={itemIndex}
+                                                className="border border-gray-200"
+                                              >
+                                                <CardContent className="p-3">
+                                                  <div className="flex items-center gap-3">
+                                                    {item.url && (
+                                                      <img
+                                                        src={item.url}
+                                                        alt={
+                                                          item.title ||
+                                                          "Preview"
+                                                        }
+                                                        className="w-20 h-20 object-cover rounded border"
+                                                      />
+                                                    )}
+                                                    <div className="flex-1 space-y-2">
+                                                      <Input
+                                                        value={item.title || ""}
+                                                        onChange={(e) => {
+                                                          const updatedProducts =
+                                                            [
+                                                              ...(belanjaSection.products ||
+                                                                []),
+                                                            ];
+                                                          const updatedItems = [
+                                                            ...updatedProducts[
+                                                              productIndex
+                                                            ].carousel_items,
+                                                          ];
+                                                          updatedItems[
+                                                            itemIndex
+                                                          ] = {
+                                                            ...item,
+                                                            title:
+                                                              e.target.value,
+                                                          };
+                                                          updatedProducts[
+                                                            productIndex
+                                                          ].carousel_items =
+                                                            updatedItems;
+                                                          setBelanjaSection(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              products:
+                                                                updatedProducts,
+                                                            })
+                                                          );
+                                                        }}
+                                                        placeholder="Judul gambar"
+                                                        className="text-sm"
+                                                      />
+                                                    </div>
+                                                    <Button
+                                                      onClick={() =>
+                                                        removeBelanjaCarouselItem(
+                                                          productIndex,
+                                                          itemIndex
+                                                        )
+                                                      }
+                                                      variant="destructive"
+                                                      size="sm"
+                                                      className="h-8 w-8 p-0"
+                                                    >
+                                                      <Trash2 className="w-3 h-3" />
+                                                    </Button>
+                                                  </div>
+                                                </CardContent>
+                                              </Card>
+                                            )
+                                          )}
+                                          {product.carousel_items.length ===
+                                            0 && (
+                                            <p className="text-sm text-gray-500 text-center py-4">
+                                              Belum ada gambar. Upload gambar
+                                              untuk produk ini.
+                                            </p>
+                                          )}
                                         </div>
                                       </div>
                                     </CardContent>
                                   </Card>
                                 )
-                              )}
-                            </div>
+                              )
+                            ) : (
+                              <p className="text-center text-gray-500 py-8">
+                                Belum ada produk. Klik "Tambah Produk" untuk
+                                menambahkan produk baru.
+                              </p>
+                            )}
                           </CardContent>
                         </Card>
 
@@ -4587,8 +4613,24 @@ export default function AdminPanel() {
                               </Button>
                             </CardTitle>
                           </CardHeader>
-                          <CardContent>
-                            <div className="space-y-4">
+                          <CardContent className="space-y-4">
+                            <div>
+                              <Label htmlFor="platforms-title">
+                                Judul Platform Section
+                              </Label>
+                              <Input
+                                id="platforms-title"
+                                value={belanjaSection.platforms_title}
+                                onChange={(e) =>
+                                  setBelanjaSection((prev) => ({
+                                    ...prev,
+                                    platforms_title: e.target.value,
+                                  }))
+                                }
+                                placeholder="Tersedia di:"
+                              />
+                            </div>
+                            <div className="space-y-4 mt-4">
                               {belanjaSection.platforms.map(
                                 (platform, index) => (
                                   <Card
@@ -5649,89 +5691,6 @@ export default function AdminPanel() {
                       </DialogContent>
                     </Dialog>
 
-                    {/* Modal Tambah Gambar Belanja */}
-                    <Dialog
-                      open={isBelanjaImageModalOpen}
-                      onOpenChange={(open) => {
-                        if (!open) closeBelanjaImageModal();
-                      }}
-                    >
-                      <DialogContent className="sm:max-w-[500px]">
-                        <DialogHeader>
-                          <DialogTitle>Tambah Gambar Produk</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div>
-                            <Label htmlFor="belanja-image-file">
-                              Upload Gambar
-                            </Label>
-                            <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-                              <label className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 border border-input bg-transparent hover:bg-accent hover:text-accent-foreground w-full sm:w-auto">
-                                <Upload className="w-4 h-4 mr-2" />
-                                {newBelanjaImage.file
-                                  ? "Ganti Gambar"
-                                  : "Pilih Gambar"}
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={handleBelanjaImageSelect}
-                                />
-                              </label>
-                              {newBelanjaImage.file && (
-                                <span className="text-sm text-gray-600 truncate">
-                                  {newBelanjaImage.file.name}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div>
-                            <Label htmlFor="belanja-image-title">
-                              Judul Gambar (Opsional)
-                            </Label>
-                            <Input
-                              id="belanja-image-title"
-                              value={newBelanjaImage.title}
-                              onChange={(e) =>
-                                setNewBelanjaImage((prev) => ({
-                                  ...prev,
-                                  title: e.target.value,
-                                }))
-                              }
-                              placeholder="Contoh: SIKOMJARU Depan"
-                            />
-                          </div>
-                          {newBelanjaImage.previewUrl && (
-                            <div className="border rounded-lg p-3 bg-gray-50">
-                              <p className="text-sm text-gray-600 mb-2">
-                                Preview:
-                              </p>
-                              <img
-                                src={newBelanjaImage.previewUrl}
-                                alt="Preview"
-                                className="w-full max-h-40 object-cover rounded"
-                              />
-                            </div>
-                          )}
-                          <div className="flex gap-2 pt-4">
-                            <Button
-                              onClick={saveBelanjaImage}
-                              className="flex-1"
-                              disabled={!newBelanjaImage.file || isUploading}
-                            >
-                              {isUploading ? "Mengupload..." : "Tambah Gambar"}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              onClick={closeBelanjaImageModal}
-                            >
-                              Batal
-                            </Button>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-
                     {/* Modal Tambah Platform Penjualan */}
                     <Dialog
                       open={isPlatformModalOpen}
@@ -6001,6 +5960,22 @@ export default function AdminPanel() {
                               }
                               placeholder="Masukkan deskripsi"
                               rows={3}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="penelitian-link">
+                              Link (Opsional)
+                            </Label>
+                            <Input
+                              id="penelitian-link"
+                              value={penelitianImageForm.link}
+                              onChange={(e) =>
+                                setPenelitianImageForm((prev) => ({
+                                  ...prev,
+                                  link: e.target.value,
+                                }))
+                              }
+                              placeholder="https://example.com"
                             />
                           </div>
                           <div className="flex gap-2 pt-4">

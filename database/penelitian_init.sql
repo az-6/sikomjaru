@@ -27,37 +27,43 @@ INSERT INTO penelitian_sections (
       "type": "image",
       "url": "https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+SMA",
       "title": "Sosialisasi di SMA Muhammadiyah Tambak",
-      "description": "Edukasi RJP untuk siswa SMK kesehatan"
+      "description": "Edukasi RJP untuk siswa SMK kesehatan",
+      "link": ""
     },
     {
       "type": "image", 
       "url": "https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+di+Desa",
       "title": "Sosialisasi di Desa Kalisaleh",
-      "description": "Pelatihan RJP untuk masyarakat desa"
+      "description": "Pelatihan RJP untuk masyarakat desa",
+      "link": ""
     },
     {
       "type": "image",
       "url": "https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Instalasi",
       "title": "Proses Instalasi & Setup",
-      "description": "Pemasangan dan konfigurasi perangkat"
+      "description": "Pemasangan dan konfigurasi perangkat",
+      "link": ""
     },
     {
       "type": "image",
       "url": "https://placehold.co/400x300/e5e7eb/4b5563?text=Sosialisasi+Kader",
       "title": "Pelatihan Kader Kesehatan",
-      "description": "Edukasi untuk kader posyandu dan puskesmas"
+      "description": "Edukasi untuk kader posyandu dan puskesmas",
+      "link": ""
     },
     {
       "type": "image",
       "url": "https://placehold.co/400x300/e5e7eb/4b5563?text=Proses+Perancangan",
       "title": "Proses Perancangan",
-      "description": "Desain dan pengembangan prototype"
+      "description": "Desain dan pengembangan prototype",
+      "link": ""
     },
     {
       "type": "special",
       "url": "",
       "title": "Penelitian Berkelanjutan",
-      "description": "Evaluasi dan pengembangan lebih lanjut"
+      "description": "Evaluasi dan pengembangan lebih lanjut",
+      "link": ""
     }
   ]'
 ) ON CONFLICT DO NOTHING;
