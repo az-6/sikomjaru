@@ -171,7 +171,7 @@ interface SpecialContent {
 }
 
 interface ReviewItem {
-  type: "image" | "special";
+  type: "image" | "video" | "special";
   url: string;
   title: string;
   description: string;
@@ -379,10 +379,16 @@ export default function AdminPanel() {
 
   // Modal state for review items
   const [isImageReviewModalOpen, setIsImageReviewModalOpen] = useState(false);
+  const [isVideoReviewModalOpen, setIsVideoReviewModalOpen] = useState(false);
   const [isSpecialReviewModalOpen, setIsSpecialReviewModalOpen] =
     useState(false);
   const [newImageReview, setNewImageReview] = useState({
     file: null as File | null,
+    url: "",
+    title: "",
+    description: "",
+  });
+  const [newVideoReview, setNewVideoReview] = useState({
     url: "",
     title: "",
     description: "",
@@ -428,10 +434,10 @@ export default function AdminPanel() {
 
   // Helper function to extract YouTube video ID
   const getYouTubeVideoId = (url: string): string | null => {
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    const regex =
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
   };
 
   // Helper function to get YouTube thumbnail
@@ -1748,10 +1754,13 @@ export default function AdminPanel() {
 
   // Review Section Helper Functions
   // Open modal for adding review items
-  const addReviewItem = (type: "image" | "special") => {
+  const addReviewItem = (type: "image" | "video" | "special") => {
     if (type === "image") {
       setNewImageReview({ file: null, url: "", title: "", description: "" });
       setIsImageReviewModalOpen(true);
+    } else if (type === "video") {
+      setNewVideoReview({ url: "", title: "", description: "" });
+      setIsVideoReviewModalOpen(true);
     } else {
       setNewSpecialReview({
         title: "",
@@ -1804,6 +1813,60 @@ export default function AdminPanel() {
     } finally {
       setIsUploadingImageReview(false);
     }
+  };
+
+  // Handle submit for video review modal
+  const handleSubmitVideoReview = () => {
+    console.log("handleSubmitVideoReview called");
+    console.log("newVideoReview:", newVideoReview);
+    
+    // Validate YouTube URL
+    const getYouTubeVideoId = (url: string): string | null => {
+      const regex =
+        /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    };
+
+    const videoId = getYouTubeVideoId(newVideoReview.url);
+    console.log("Video ID:", videoId);
+    
+    if (!videoId) {
+      toast({
+        title: "Error",
+        description: "URL YouTube tidak valid. Pastikan URL dalam format yang benar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!newVideoReview.title || !newVideoReview.description) {
+      toast({
+        title: "Error",
+        description: "Title dan description harus diisi",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newItem: ReviewItem = {
+      type: "video",
+      url: newVideoReview.url,
+      title: newVideoReview.title,
+      description: newVideoReview.description,
+    };
+
+    console.log("Adding new video item:", newItem);
+    setReviewSection((prev) => ({
+      ...prev,
+      review_items: [...(prev.review_items || []), newItem],
+    }));
+    setIsVideoReviewModalOpen(false);
+    setNewVideoReview({ url: "", title: "", description: "" });
+    toast({
+      title: "Berhasil!",
+      description: "Video review berhasil ditambahkan",
+    });
   };
 
   // Handle submit for special review modal
@@ -4895,6 +4958,15 @@ export default function AdminPanel() {
                                 <Button
                                   variant="outline"
                                   size="sm"
+                                  onClick={() => addReviewItem("video")}
+                                  className="w-full sm:w-auto text-xs"
+                                >
+                                  <Plus className="w-3 h-3 mr-1" />
+                                  Video Review
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
                                   onClick={() => addReviewItem("special")}
                                   className="w-full sm:w-auto text-xs"
                                 >
@@ -4917,6 +4989,8 @@ export default function AdminPanel() {
                                         <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                           {item.type === "image"
                                             ? "📷 Image Review"
+                                            : item.type === "video"
+                                            ? "🎥 Video Review"
                                             : "⭐ Special Item"}
                                         </span>
                                         <Button
@@ -4962,6 +5036,44 @@ export default function AdminPanel() {
                                           <p className="text-sm text-blue-600 break-all bg-gray-50 p-2 rounded border">
                                             {item.url}
                                           </p>
+                                        </div>
+                                      )}
+
+                                      {item.type === "video" && (
+                                        <div>
+                                          <Label className="text-xs text-gray-600">
+                                            URL YouTube
+                                          </Label>
+                                          <p className="text-sm text-blue-600 break-all bg-gray-50 p-2 rounded border mb-2">
+                                            {item.url}
+                                          </p>
+                                          {(() => {
+                                            const getYouTubeVideoId = (
+                                              url: string
+                                            ): string | null => {
+                                              const regex =
+                                                /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                                              const match = url.match(regex);
+                                              return match ? match[1] : null;
+                                            };
+                                            const videoId = getYouTubeVideoId(
+                                              item.url
+                                            );
+                                            return videoId ? (
+                                              <div className="aspect-video w-full rounded-lg overflow-hidden">
+                                                <iframe
+                                                  src={`https://www.youtube.com/embed/${videoId}`}
+                                                  title={
+                                                    item.title ||
+                                                    "YouTube video"
+                                                  }
+                                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                  allowFullScreen
+                                                  className="w-full h-full"
+                                                ></iframe>
+                                              </div>
+                                            ) : null;
+                                          })()}
                                         </div>
                                       )}
 
@@ -5241,6 +5353,121 @@ export default function AdminPanel() {
                                 </Button>
                                 <Button
                                   onClick={handleSubmitSpecialReview}
+                                  className="w-full sm:w-auto order-1 sm:order-2"
+                                >
+                                  Tambah
+                                </Button>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* Modal for Video Review */}
+                        <Dialog
+                          open={isVideoReviewModalOpen}
+                          onOpenChange={setIsVideoReviewModalOpen}
+                        >
+                          <DialogContent className="w-[95vw] max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle className="text-lg sm:text-xl">
+                                Tambah Video Review
+                              </DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4 p-1">
+                              <div>
+                                <Label className="text-sm font-medium">
+                                  URL YouTube
+                                </Label>
+                                <Input
+                                  value={newVideoReview.url}
+                                  onChange={(e) =>
+                                    setNewVideoReview((prev) => ({
+                                      ...prev,
+                                      url: e.target.value,
+                                    }))
+                                  }
+                                  placeholder="https://www.youtube.com/watch?v=..."
+                                  className="mt-1"
+                                />
+                                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                                  Masukkan link YouTube video review
+                                </p>
+                              </div>
+                              <div>
+                                <Label className="text-sm font-medium">
+                                  Judul
+                                </Label>
+                                <Input
+                                  value={newVideoReview.title}
+                                  onChange={(e) =>
+                                    setNewVideoReview((prev) => ({
+                                      ...prev,
+                                      title: e.target.value,
+                                    }))
+                                  }
+                                  placeholder="Judul review"
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-sm font-medium">
+                                  Deskripsi
+                                </Label>
+                                <Textarea
+                                  value={newVideoReview.description}
+                                  onChange={(e) =>
+                                    setNewVideoReview((prev) => ({
+                                      ...prev,
+                                      description: e.target.value,
+                                    }))
+                                  }
+                                  placeholder="Deskripsi review"
+                                  rows={2}
+                                  className="mt-1 resize-none"
+                                />
+                              </div>
+                              {newVideoReview.url &&
+                                (() => {
+                                  const getYouTubeVideoId = (
+                                    url: string
+                                  ): string | null => {
+                                    const regex =
+                                      /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                                    const match = url.match(regex);
+                                    return match ? match[1] : null;
+                                  };
+                                  const videoId = getYouTubeVideoId(
+                                    newVideoReview.url
+                                  );
+                                  return videoId ? (
+                                    <div>
+                                      <Label className="text-sm font-medium">
+                                        Preview
+                                      </Label>
+                                      <div className="mt-1 aspect-video w-full rounded-lg overflow-hidden">
+                                        <iframe
+                                          src={`https://www.youtube.com/embed/${videoId}`}
+                                          title="YouTube video preview"
+                                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                          allowFullScreen
+                                          className="w-full h-full"
+                                        ></iframe>
+                                      </div>
+                                    </div>
+                                  ) : null;
+                                })()}
+                              <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                                <Button
+                                  variant="outline"
+                                  onClick={() =>
+                                    setIsVideoReviewModalOpen(false)
+                                  }
+                                  className="w-full sm:w-auto order-2 sm:order-1"
+                                >
+                                  Batal
+                                </Button>
+                                <Button
+                                  onClick={handleSubmitVideoReview}
                                   className="w-full sm:w-auto order-1 sm:order-2"
                                 >
                                   Tambah

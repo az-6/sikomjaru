@@ -7,7 +7,7 @@ interface SpecialContent {
 }
 
 interface ReviewItem {
-  type: "image" | "special";
+  type: "image" | "video" | "special";
   url: string;
   title: string;
   description: string;

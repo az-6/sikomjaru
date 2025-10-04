@@ -19,7 +19,7 @@ interface SpecialContent {
 }
 
 interface ReviewItem {
-  type: "image" | "special";
+  type: "image" | "video" | "special";
   url: string;
   title: string;
   description: string;
@@ -46,6 +46,14 @@ const getBackgroundClasses = (background: string) => {
     default:
       return "bg-gradient-to-br from-blue-50 to-blue-100";
   }
+};
+
+// Helper function to extract YouTube video ID
+const getYouTubeVideoId = (url: string): string | null => {
+  const regex =
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
 };
 
 export default function ReviewSection() {
@@ -111,6 +119,18 @@ export default function ReviewSection() {
                             alt={item.title}
                             className="rounded-lg w-full h-36 sm:h-48 object-cover"
                           />
+                        ) : item.type === "video" ? (
+                          <div className="relative rounded-t-lg overflow-hidden h-36 sm:h-48 bg-black">
+                            <iframe
+                              src={`https://www.youtube.com/embed/${getYouTubeVideoId(
+                                item.url
+                              )}`}
+                              title={item.title}
+                              className="w-full h-full"
+                              allowFullScreen
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            />
+                          </div>
                         ) : (
                           <div
                             className={`${getBackgroundClasses(
